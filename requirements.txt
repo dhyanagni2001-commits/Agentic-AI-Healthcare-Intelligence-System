@@ -1,0 +1,14 @@
+# The backend runs with ZERO dependencies using: python3 server.py
+#
+# These are OPTIONAL — only needed if you want the FastAPI version:
+#   pip install -r requirements.txt
+#   uvicorn backend.main_fastapi:app --reload --port 8000
+
+fastapi>=0.111.0
+uvicorn[standard]>=0.29.0
+pydantic>=2.7.0
+python-multipart>=0.0.9
+
+# Optional: real vector embeddings (upgrade from TF-IDF)
+# faiss-cpu>=1.8.0
+# sentence-transformers>=2.7.0
