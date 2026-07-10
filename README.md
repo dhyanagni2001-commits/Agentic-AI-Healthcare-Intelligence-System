@@ -100,7 +100,7 @@ Uses TF-IDF retrieval and returns deterministic template answers (no LLM key nee
 All endpoints are available on both the production FastAPI server and the lightweight stdlib server.
 
 ### GET `/health`
-Returns server status and whether the index is ready.
+Returns server status and whether the index is ready and working well.
 
 ### GET `/stats`
 Dataset-wide statistics: total hospitals, states covered, emergency services coverage, doctor totals, type distribution.
