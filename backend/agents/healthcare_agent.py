@@ -1,15 +1,39 @@
-"""5-node LangGraph-style reasoning agent — stdlib only."""
+"""5-agent reasoning graph, built on LangGraph.
+
+Five agents share one `AgentState` (Query Planner -> Retrieval ->
+Validation -> Gap Analysis -> Recommendation), compiled once at import
+time and re-invoked per query. The retriever (FAISS/embeddings or legacy
+TF-IDF) is injected per-call via LangGraph's `config["configurable"]`
+rather than baked into the compiled graph, so the same graph instance
+serves every request without rebuilding.
+
+Accepts any index object that duck-types the legacy search()/filter_by_state()/
+filter_by_capability()/get_by_id() interface (TfidfHospitalIndex or
+VectorHospitalIndex) — kept import-light at runtime (no torch/faiss
+dependency) so this module and the zero-dependency server.py fallback
+keep working without the embeddings stack installed; VectorHospitalIndex
+is only imported for static type-checking, never at runtime.
+"""
 from __future__ import annotations
 import re, logging
-from typing import Dict, List, Optional
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
+
+from langgraph.graph import StateGraph, START, END
+from langgraph.types import RunnableConfig
+
 from backend.models.schemas import (
     AgentResponse, GapAnalysisResult, HealthcareGap,
     HospitalRecord, Recommendation, ReasoningStep, RiskLevel
 )
-from backend.services.rag_service import HospitalIndex
 from backend.services.validation_service import validate_hospital
 from backend.services.gap_detection import analyse_region
 from backend.services.recommendation_engine import generate_recommendations
+from backend.services.llm_service import generate as llm_generate, LLMNotConfiguredError
+from backend.prompts.templates import RAG_ANSWER_SYSTEM, RAG_ANSWER_PROMPT, format_evidence_block
+
+if TYPE_CHECKING:
+    from backend.services.hybrid_index import VectorHospitalIndex
 
 log = logging.getLogger(__name__)
 
@@ -44,60 +68,68 @@ _CAP_KW = {
 }
 
 
-# ── State object ──────────────────────────────────────────────────────────────
+# ── Shared state (LangGraph schema) ───────────────────────────────────────────
 
+@dataclass
 class AgentState:
-    def __init__(self, query: str, max_results: int = 10):
-        self.query = query
-        self.max_results = max_results
-        self.intents: List[str] = []
-        self.state_filter: Optional[str] = None
-        self.city_filter:  Optional[str] = None
-        self.cap_filter:   Optional[str] = None
-        self.retrieved: List[HospitalRecord] = []
-        self.gap_result: Optional[GapAnalysisResult] = None
-        self.recommendations: List[Recommendation] = []
-        self.steps: List[ReasoningStep] = []
-
-    def add_step(self, name, desc, data_ids, summary):
-        self.steps.append(ReasoningStep(name, desc, data_ids, summary))
+    query: str
+    max_results: int = 10
+    intents: List[str] = field(default_factory=list)
+    state_filter: Optional[str] = None
+    city_filter:  Optional[str] = None
+    cap_filter:   Optional[str] = None
+    retrieved: List[HospitalRecord] = field(default_factory=list)
+    gap_result: Optional[GapAnalysisResult] = None
+    recommendations: List[Recommendation] = field(default_factory=list)
+    steps: List[ReasoningStep] = field(default_factory=list)
 
 
-# ── Nodes ─────────────────────────────────────────────────────────────────────
+# ── Agents ─────────────────────────────────────────────────────────────────────
+# Each agent is a LangGraph node: `AgentState -> Partial<AgentState>`.
 
-def node_parse_query(state: AgentState) -> AgentState:
+def query_planner_agent(state: AgentState) -> Dict[str, Any]:
+    """Extracts intent, state, city, and capability/specialty filters from
+    the raw query text."""
     q = state.query.lower()
-    intents = [k for k, pats in _INTENTS.items() if any(re.search(p,q) for p in pats)]
-    state.intents = intents or ["hospital_search"]
+    intents = [k for k, pats in _INTENTS.items() if any(re.search(p, q) for p in pats)]
+    intents = intents or ["hospital_search"]
 
-    # State
+    state_filter = state.state_filter
     for name, abbr in _STATE_NAMES.items():
         if name in q:
-            state.state_filter = abbr; break
-    if not state.state_filter:
+            state_filter = abbr; break
+    if not state_filter:
         m = re.search(r"\b([A-Z]{2})\b", state.query)
         if m and m.group(1) in _ABBREVS:
-            state.state_filter = m.group(1)
+            state_filter = m.group(1)
 
-    # City
+    city_filter = state.city_filter
     m = re.search(r"\bin\s+([A-Z][a-z]+(?: [A-Z][a-z]+)*)", state.query)
-    if m: state.city_filter = m.group(1)
+    if m:
+        city_filter = m.group(1)
 
-    # Capability
+    cap_filter = state.cap_filter
     for cap, kws in _CAP_KW.items():
         if any(kw in q for kw in kws):
-            state.cap_filter = cap; break
+            cap_filter = cap; break
 
-    state.add_step("parse_query", f"Analysed: '{state.query}'", [],
-        f"Intents={state.intents}, state={state.state_filter}, "
-        f"city={state.city_filter}, capability={state.cap_filter}")
-    return state
+    step = ReasoningStep("query_planner", f"Analysed: '{state.query}'", [],
+        f"Intents={intents}, state={state_filter}, city={city_filter}, capability={cap_filter}")
+    return {
+        "intents": intents, "state_filter": state_filter, "city_filter": city_filter,
+        "cap_filter": cap_filter, "steps": state.steps + [step],
+    }
 
 
-def node_retrieve_data(state: AgentState, index: HospitalIndex) -> AgentState:
+def retrieval_agent(state: AgentState, config: RunnableConfig) -> Dict[str, Any]:
+    """Searches the retriever (FAISS/embeddings or legacy TF-IDF, injected
+    via config["configurable"]["index"]) for hospitals matching the
+    planned query/filters."""
+    index = config["configurable"]["index"]
     q = state.query + (f" {state.cap_filter}" if state.cap_filter else "")
     results = index.search(q, top_k=state.max_results,
-                           state_filter=state.state_filter, city_filter=state.city_filter)
+                           state_filter=state.state_filter, city_filter=state.city_filter,
+                           cap_filter=state.cap_filter)
 
     if not results and state.state_filter:
         hs = index.filter_by_state(state.state_filter)
@@ -110,55 +142,101 @@ def node_retrieve_data(state: AgentState, index: HospitalIndex) -> AgentState:
                 results.append((h, 0.3))
             if len(results) >= state.max_results: break
 
-    state.retrieved = [h for h, _ in results]
-    state.add_step("retrieve_data", f"Searched index: '{q}'",
-        [h.facility_id for h in state.retrieved],
-        f"Retrieved {len(state.retrieved)} hospitals"
+    retrieved = [h for h, _ in results]
+    step = ReasoningStep("retrieval", f"Searched index: '{q}'",
+        [h.facility_id for h in retrieved],
+        f"Retrieved {len(retrieved)} hospitals"
         + (f" in {state.state_filter}" if state.state_filter else ""))
-    return state
+    return {"retrieved": retrieved, "steps": state.steps + [step]}
 
 
-def node_validate_data(state: AgentState) -> AgentState:
+def validation_agent(state: AgentState) -> Dict[str, Any]:
+    """Flags missing/inconsistent data and low-confidence records among the
+    retrieved hospitals."""
     high_risk, total_issues = [], 0
     for h in state.retrieved:
         r = validate_hospital(h)
         if r.risk_level in (RiskLevel.HIGH, RiskLevel.CRITICAL):
             high_risk.append(h.facility_name)
         total_issues += len(r.issues)
-    state.add_step("validate_data", f"Validated {len(state.retrieved)} hospitals",
+    step = ReasoningStep("validation", f"Validated {len(state.retrieved)} hospitals",
         [h.facility_id for h in state.retrieved],
         f"{len(high_risk)} high-risk, {total_issues} total issues"
         + (f". High-risk: {', '.join(high_risk[:3])}" if high_risk else ""))
-    return state
+    return {"steps": state.steps + [step]}
 
 
-def node_detect_gaps(state: AgentState) -> AgentState:
+def gap_analysis_agent(state: AgentState) -> Dict[str, Any]:
+    """Computes ICU/ER coverage, doctor density, and specialty availability
+    for the retrieved region."""
     if not state.retrieved:
-        state.add_step("detect_gaps","No hospitals","[]","Skipped")
-        return state
+        step = ReasoningStep("gap_analysis", "No hospitals", [], "Skipped")
+        return {"steps": state.steps + [step]}
     gr = analyse_region(state.retrieved, state=state.state_filter, city=state.city_filter)
-    state.gap_result = gr
-    state.add_step("detect_gaps", f"Gap analysis on {len(state.retrieved)} hospitals",
+    step = ReasoningStep("gap_analysis", f"Gap analysis on {len(state.retrieved)} hospitals",
         [h.facility_id for h in state.retrieved],
         f"{len(gr.gaps)} gap(s), overall risk: {gr.overall_risk.upper()}")
-    return state
+    return {"gap_result": gr, "steps": state.steps + [step]}
 
 
-def node_generate_recommendation(state: AgentState) -> AgentState:
+def recommendation_agent(state: AgentState) -> Dict[str, Any]:
+    """Maps detected gaps to prioritised staffing/infrastructure/investment
+    recommendations."""
     if not state.gap_result or not state.gap_result.gaps:
-        state.add_step("generate_recommendation","No gaps","[]","No recommendations needed")
-        return state
+        step = ReasoningStep("recommendation", "No gaps", [], "No recommendations needed")
+        return {"steps": state.steps + [step]}
     recs = generate_recommendations(state.gap_result, state.retrieved)
-    state.recommendations = recs
-    state.add_step("generate_recommendation", f"{len(recs)} recommendations",
+    step = ReasoningStep("recommendation", f"{len(recs)} recommendations",
         [h.facility_id for h in state.retrieved],
         f"Top: {recs[0].title if recs else 'none'}")
-    return state
+    return {"recommendations": recs, "steps": state.steps + [step]}
+
+
+# ── Graph assembly (compiled once, reused across every run_agent call) ───────
+
+_builder = StateGraph(AgentState)
+_builder.add_node("query_planner", query_planner_agent)
+_builder.add_node("retrieval", retrieval_agent)
+_builder.add_node("validation", validation_agent)
+_builder.add_node("gap_analysis", gap_analysis_agent)
+_builder.add_node("recommendation", recommendation_agent)
+_builder.add_edge(START, "query_planner")
+_builder.add_edge("query_planner", "retrieval")
+_builder.add_edge("retrieval", "validation")
+_builder.add_edge("validation", "gap_analysis")
+_builder.add_edge("gap_analysis", "recommendation")
+_builder.add_edge("recommendation", END)
+_compiled_graph = _builder.compile()
 
 
 # ── Answer synthesis ──────────────────────────────────────────────────────────
 
-def _answer(state: AgentState) -> str:
+def _llm_answer(state: AgentState, retrieved_documents: List[Dict]) -> Optional[str]:
+    """Grounded LLM narration over the already-computed gaps/recommendations/
+    retrieved hospitals. Returns None if the LLM isn't configured, so the
+    caller can fall back to the deterministic template — the rule-based
+    computations are the source of truth either way; the LLM only narrates."""
+    region = ", ".join(p for p in [state.city_filter, state.state_filter] if p) or "the queried region"
+    facts = [f"{len(state.retrieved)} hospitals retrieved for {region}."]
+    if state.gap_result:
+        facts.append(f"Gap analysis: {state.gap_result.summary}")
+        facts.extend(f"Gap — [{g.severity.upper()}] {g.description}" for g in state.gap_result.gaps)
+    if state.recommendations:
+        facts.extend(f"Recommendation — [{r.priority.upper()}] {r.title}: {r.description}"
+                      for r in state.recommendations[:5])
+
+    evidence_block = format_evidence_block(retrieved_documents) if retrieved_documents else \
+        "\n".join(f"- {h.facility_name} ({h.city}, {h.state})" for h in state.retrieved[:8])
+    prompt = RAG_ANSWER_PROMPT.format(query=state.query, evidence_block=evidence_block,
+                                       facts_block="\n".join(f"- {f}" for f in facts))
+    try:
+        return llm_generate(prompt, system=RAG_ANSWER_SYSTEM)
+    except LLMNotConfiguredError as e:
+        log.info(f"LLM not configured, using template answer: {e}")
+        return None
+
+
+def _template_answer(state: AgentState) -> str:
     parts = []
     region = ", ".join(p for p in [state.city_filter, state.state_filter] if p) or "the queried region"
 
@@ -204,33 +282,45 @@ def _answer(state: AgentState) -> str:
 
 # ── Public entry point ────────────────────────────────────────────────────────
 
-def run_agent(query: str, index: HospitalIndex,
+def run_agent(query: str, index: VectorHospitalIndex,
               state_filter: Optional[str] = None,
               city_filter:  Optional[str] = None,
               include_reasoning: bool = True,
               max_results: int = 10) -> AgentResponse:
-    state = AgentState(query, max_results)
-    if state_filter: state.state_filter = state_filter
-    if city_filter:  state.city_filter  = city_filter
+    initial = AgentState(query=query, max_results=max_results,
+                          state_filter=state_filter, city_filter=city_filter)
 
     try:
-        state = node_parse_query(state)
-        state = node_retrieve_data(state, index)
-        state = node_validate_data(state)
-        state = node_detect_gaps(state)
-        state = node_generate_recommendation(state)
+        result = _compiled_graph.invoke(initial, config={"configurable": {"index": index}})
+        state = AgentState(**result)
     except Exception as e:
         log.error(f"Agent error: {e}", exc_info=True)
         return AgentResponse(query=query, answer=f"Agent error: {e}", confidence=0.0)
 
     gaps = state.gap_result.gaps if state.gap_result else []
+
+    retrieved_documents: List[Dict] = []
+    if hasattr(index, "search_documents"):
+        try:
+            raw = index.search_documents(state.query, top_k=max_results)
+            retrieved_documents = [{
+                "id": doc.id, "doc_type": doc.doc_type,
+                "snippet": doc.text[:220], "score": round(score, 4),
+                "metadata": doc.metadata,
+            } for doc, score in raw]
+        except Exception as e:
+            log.warning(f"search_documents failed, continuing without evidence panel: {e}")
+
+    answer = _llm_answer(state, retrieved_documents) or _template_answer(state)
+
     return AgentResponse(
         query=query,
-        answer=_answer(state),
+        answer=answer,
         reasoning_steps=state.steps if include_reasoning else [],
         hospitals_referenced=[h.facility_id for h in state.retrieved],
         gaps_identified=gaps,
         recommendations=state.recommendations,
         confidence=min(1.0, 0.5 + 0.1 * len(state.retrieved)),
         data_sources=[h.facility_name for h in state.retrieved[:5]],
+        retrieved_documents=retrieved_documents,
     )

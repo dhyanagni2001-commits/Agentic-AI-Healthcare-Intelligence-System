@@ -88,6 +88,7 @@ class HospitalRecord:
 
     @staticmethod
     def from_dict(d: Dict[str, Any]) -> "HospitalRecord":
+        d = dict(d)
         caps  = HospitalCapabilities(**d.pop("capabilities", {}))
         qual  = HospitalQualityMetrics(**d.pop("quality", {}))
         depts = d.pop("departments", [])
@@ -215,6 +216,7 @@ class AgentResponse:
     recommendations:     List[Recommendation]   = field(default_factory=list)
     confidence:          float                  = 0.8
     data_sources:        List[str]              = field(default_factory=list)
+    retrieved_documents: List[Dict[str, Any]]   = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -226,6 +228,7 @@ class AgentResponse:
             "recommendations":      [r.to_dict() for r in self.recommendations],
             "confidence":           self.confidence,
             "data_sources":         self.data_sources,
+            "retrieved_documents":  self.retrieved_documents,
         }
 
 

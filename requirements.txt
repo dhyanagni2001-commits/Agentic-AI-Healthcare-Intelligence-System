@@ -1,6 +1,7 @@
-# The backend runs with ZERO dependencies using: python3 server.py
-#
-# These are OPTIONAL — only needed if you want the FastAPI version:
+# The legacy backend (server.py) only needs `pydantic` (lightweight,
+# used for ingestion schema validation) — it does NOT need the heavy
+# FAISS/embeddings/LLM stack below, which is for the FastAPI rebuild:
+#   python3 -m venv .venv && source .venv/bin/activate
 #   pip install -r requirements.txt
 #   uvicorn backend.main_fastapi:app --reload --port 8000
 
@@ -9,6 +10,19 @@ uvicorn[standard]>=0.29.0
 pydantic>=2.7.0
 python-multipart>=0.0.9
 
-# Optional: real vector embeddings (upgrade from TF-IDF)
-# faiss-cpu>=1.8.0
-# sentence-transformers>=2.7.0
+# Data ingestion
+# (pydantic above covers schema validation; no extra deps needed)
+
+# Retrieval: real vector embeddings (replaces TF-IDF as primary retriever)
+sentence-transformers==3.0.1
+faiss-cpu>=1.8.0
+numpy<2
+scipy<1.13
+scikit-learn<1.5
+
+# Agent orchestration
+langgraph>=0.2.0
+
+# LLM providers (Phase 3)
+google-genai>=0.7.0
+openai>=1.30.0

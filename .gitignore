@@ -2,3 +2,9 @@ data/all_us_doctors.csv
 data/all_us_hospital_doctor_mapping.csv
 data/all_us_department_summary.csv
 data/cache.json
+data/vector_index/
+.venv/
+.env
+__pycache__/
+*.pyc
+backend/evaluation/results/

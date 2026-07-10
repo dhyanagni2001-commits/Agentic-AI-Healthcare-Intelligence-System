@@ -36,7 +36,7 @@ log = logging.getLogger("server")
 def _load():
     global _hospitals, _index
     from backend.services.data_loader import load_all_hospitals
-    from backend.services.rag_service import build_index
+    from backend.services.legacy_tfidf_service import build_index
     log.info("Loading hospital data…")
     _hospitals = load_all_hospitals()
     log.info(f"Loaded {len(_hospitals)} hospitals — building index…")
@@ -180,7 +180,8 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 mr = int(min_r)
                 items = [h for h in items if h.quality.overall_rating and h.quality.overall_rating >= mr]
-            except: pass
+            except ValueError:
+                pass
         if h_type: items = [h for h in items if h_type.lower() in (h.hospital_type or "").lower()]
 
         total    = len(items)

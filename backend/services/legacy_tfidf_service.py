@@ -1,4 +1,10 @@
-"""TF-IDF hospital search index — stdlib only."""
+"""Legacy TF-IDF hospital search index — stdlib only.
+
+Kept solely as a retrieval-quality benchmark comparator for the
+evaluation framework (backend/evaluation/) against the FAISS+embeddings
+index in hybrid_index.py. Not used in the live query path anymore —
+see backend/services/hybrid_index.py for the production retriever.
+"""
 from __future__ import annotations
 import re, math
 from typing import Dict, List, Optional, Tuple
@@ -23,7 +29,7 @@ def _tok(text: str) -> List[str]:
     return re.findall(r"[a-z0-9]+", text.lower())
 
 
-class HospitalIndex:
+class TfidfHospitalIndex:
     def __init__(self):
         self._records: Dict[str, HospitalRecord] = {}
         self._tf: Dict[str, Dict[str, float]] = {}
@@ -54,7 +60,8 @@ class HospitalIndex:
                query: str,
                top_k: int = 10,
                state_filter: Optional[str] = None,
-               city_filter: Optional[str] = None) -> List[Tuple[HospitalRecord, float]]:
+               city_filter: Optional[str] = None,
+               cap_filter: Optional[str] = None) -> List[Tuple[HospitalRecord, float]]:
         if not self._built:
             raise RuntimeError("Index not built — call build() first")
 
@@ -98,17 +105,17 @@ class HospitalIndex:
         return len(self._records)
 
 
-_INDEX: Optional[HospitalIndex] = None
+_INDEX: Optional[TfidfHospitalIndex] = None
 
 
-def get_index() -> HospitalIndex:
+def get_index() -> TfidfHospitalIndex:
     global _INDEX
     if _INDEX is None:
-        _INDEX = HospitalIndex()
+        _INDEX = TfidfHospitalIndex()
     return _INDEX
 
 
-def build_index(hospitals: Dict[str, HospitalRecord]) -> HospitalIndex:
+def build_index(hospitals: Dict[str, HospitalRecord]) -> TfidfHospitalIndex:
     idx = get_index()
     idx.build(hospitals)
     return idx

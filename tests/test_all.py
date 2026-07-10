@@ -1,5 +1,8 @@
 """
-Full test suite — pure Python stdlib, zero external deps.
+Full test suite for the legacy stdlib-only services + agent.
+Only dependency: `pydantic` (used by the ingestion schema-validation gate
+in data_loader.py). Does NOT require the FAISS/embeddings/LLM stack —
+see test_embedding_retrieval.py and test_rag_pipeline.py for those.
 Run:  python3 tests/test_all.py
       python3 -m pytest tests/test_all.py -v   (if pytest installed)
 """
@@ -13,7 +16,7 @@ from backend.models.schemas import (
 )
 from backend.services.idp_service import parse_hospital_text
 from backend.services.validation_service import validate_hospital, validate_many
-from backend.services.rag_service import HospitalIndex
+from backend.services.legacy_tfidf_service import TfidfHospitalIndex
 from backend.services.gap_detection import analyse_region
 from backend.services.recommendation_engine import generate_recommendations
 
@@ -31,7 +34,7 @@ def H(fid="T001", name="Test Hospital", city="Houston", state="TX",
     )
 
 
-def sample_index() -> HospitalIndex:
+def sample_index() -> TfidfHospitalIndex:
     hospitals = {
         "TX001": HospitalRecord("TX001","Houston ER",city="Houston",state="TX",
                                 capabilities=HospitalCapabilities(emergency_services=True,icu=True)),
@@ -41,7 +44,7 @@ def sample_index() -> HospitalIndex:
                                 capabilities=HospitalCapabilities(cardiac_care=True,emergency_services=True)),
     }
     hospitals["NY001"].departments = ["Cardiology","Emergency"]
-    idx = HospitalIndex()
+    idx = TfidfHospitalIndex()
     idx.build(hospitals)
     return idx
 
@@ -204,7 +207,7 @@ class TestRAG(unittest.TestCase):
             self.assertIsInstance(score, float)
 
     def test_unbuilt_raises(self):
-        idx = HospitalIndex()
+        idx = TfidfHospitalIndex()
         with self.assertRaises(RuntimeError):
             idx.search("anything")
 

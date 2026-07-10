@@ -12,24 +12,29 @@ from collections import defaultdict
 from backend.models.schemas import (
     HospitalRecord, HospitalCapabilities, HospitalQualityMetrics
 )
+from backend.ingestion.clean import CleaningReport, clean_str, clean_bool, clean_int
+from backend.ingestion.schemas_pydantic import HospitalRecordIn, issues_from_validation_error
+from pydantic import ValidationError
 
 log = logging.getLogger(__name__)
 DATA_DIR   = Path(__file__).parent.parent.parent / "data"
 CACHE_FILE = DATA_DIR / "cache.json"
 
+_REPORT = CleaningReport()
+
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
+# Thin wrappers over backend.ingestion.clean so existing call sites in this
+# module don't need to thread the CleaningReport through every call.
 
 def _bool(v: str) -> bool:
-    return str(v).strip().lower() in ("yes", "true", "1", "y")
+    return clean_bool(v, "unspecified", _REPORT)
 
 def _int(v: str, default=None) -> Optional[int]:
-    try: return int(str(v).strip())
-    except: return default
+    return clean_int(v, "unspecified", _REPORT, default=default)
 
 def _str(v: str) -> Optional[str]:
-    s = str(v).strip()
-    return s if s and s.lower() not in ("n/a", "none", "null", "") else None
+    return clean_str(v, "unspecified", _REPORT)
 
 
 def _capabilities(row: Dict) -> HospitalCapabilities:
@@ -81,12 +86,29 @@ def _confidence(r: HospitalRecord) -> float:
 
 def _load_hospitals() -> Dict[str, HospitalRecord]:
     out: Dict[str, HospitalRecord] = {}
+    issue_count = 0
     with open(DATA_DIR / "all_us_hospitals.csv", newline="", encoding="utf-8") as f:
         for row in csv.DictReader(f):
             fid  = _str(row.get("Facility ID", ""))
             name = _str(row.get("Facility Name", ""))
             if not fid or not name:
                 continue
+
+            quality = _quality(row)
+            try:
+                HospitalRecordIn(
+                    facility_id=fid, facility_name=name,
+                    city=_str(row.get("City")), state=_str(row.get("State")),
+                    zip_code=_str(row.get("ZIP Code")),
+                    hospital_type=_str(row.get("Hospital Type")),
+                    ownership=_str(row.get("Hospital Ownership")),
+                    overall_rating=quality.overall_rating,
+                )
+            except ValidationError as e:
+                for issue in issues_from_validation_error(fid, e):
+                    issue_count += 1
+                    log.debug(f"Validation issue for {fid}: {issue.field} — {issue.issue}")
+
             out[fid] = HospitalRecord(
                 facility_id   = fid,
                 facility_name = name,
@@ -99,9 +121,9 @@ def _load_hospitals() -> Dict[str, HospitalRecord]:
                 hospital_type = _str(row.get("Hospital Type")),
                 ownership     = _str(row.get("Hospital Ownership")),
                 capabilities  = _capabilities(row),
-                quality       = _quality(row),
+                quality       = quality,
             )
-    log.info(f"Loaded {len(out)} hospitals")
+    log.info(f"Loaded {len(out)} hospitals — {issue_count} Pydantic validation issues flagged")
     return out
 
 
@@ -157,6 +179,7 @@ def load_all_hospitals(force_reload: bool = False) -> Dict[str, HospitalRecord]:
 
     hospitals = _load_hospitals()
     _enrich(hospitals, _load_dept_summary())
+    _REPORT.log_summary(log)
 
     try:
         CACHE_FILE.write_text(

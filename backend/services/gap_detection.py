@@ -6,11 +6,13 @@ from backend.models.schemas import (
     HospitalRecord, HealthcareGap, GapAnalysisResult, GapType, RiskLevel
 )
 
-_BELOW = lambda v: v is not None and "below" in str(v).lower()
+def _is_below(v) -> bool:
+    return v is not None and "below" in str(v).lower()
 
 
 def _er_gap(hospitals, region):
-    total = len(hospitals); with_er = sum(1 for h in hospitals if h.capabilities.emergency_services)
+    total = len(hospitals)
+    with_er = sum(1 for h in hospitals if h.capabilities.emergency_services)
     ratio = with_er / total
     if ratio < 0.40:
         return HealthcareGap(GapType.NO_EMERGENCY,
@@ -19,7 +21,8 @@ def _er_gap(hospitals, region):
             RiskLevel.CRITICAL if ratio < 0.2 else RiskLevel.HIGH, region)
 
 def _icu_gap(hospitals, region):
-    total = len(hospitals); with_icu = sum(1 for h in hospitals if h.capabilities.icu)
+    total = len(hospitals)
+    with_icu = sum(1 for h in hospitals if h.capabilities.icu)
     ratio = with_icu / total
     if ratio < 0.25:
         return HealthcareGap(GapType.NO_ICU,
@@ -49,7 +52,7 @@ def _spec_gap(hospitals, region):
             f"Patients requiring {', '.join(missing)} must travel outside region")
 
 def _qual_gap(hospitals, region):
-    below = sum(1 for h in hospitals if _BELOW(h.quality.safety_comparison))
+    below = sum(1 for h in hospitals if _is_below(h.quality.safety_comparison))
     if below / len(hospitals) > 0.5:
         return HealthcareGap(GapType.LOW_QUALITY,
             f"{below}/{len(hospitals)} hospitals below national average for safety in {region}",
