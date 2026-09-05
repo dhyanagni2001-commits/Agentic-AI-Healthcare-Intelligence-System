@@ -1,140 +1,255 @@
-# HealthIQ — Agentic AI Healthcare Intelligence Platform
+# HealthIQ
 
-A full-stack healthcare intelligence system built on a **5-agent LangGraph reasoning pipeline**, FAISS semantic search, RAG answer synthesis (Gemini 2.5 Flash), and a React dashboard — spanning **5,335 US hospitals** and **536,723 doctors**.
+HealthIQ is a hospital-data search and analysis application built with FastAPI, React, FAISS, sentence-transformer embeddings, LangGraph, and optional LLM-generated summaries.
 
----
+The project combines public hospital records, provider data, semantic retrieval, rule-based data-quality checks, and a structured query workflow. It is intended for software and data-engineering experimentation—not for medical diagnosis, treatment, hospital selection, or clinical decision-making.
 
-## Tech Stack
+## Motivation
+
+Public healthcare datasets contain useful information about facilities, services, providers, and quality measures, but the information is often distributed across multiple files and difficult to explore using natural-language questions.
+
+I built HealthIQ to explore how these datasets could be:
+
+- Cleaned and joined into consistent hospital records.
+- Converted into searchable text documents.
+- Retrieved using both TF-IDF and dense embeddings.
+- Checked for missing or potentially inconsistent fields.
+- Summarized through a structured workflow.
+- Presented through an API and React interface.
+
+The project focuses on data exploration and retrieval. Any generated recommendation is an illustrative rule-based output and should not be interpreted as medical, staffing, financial, or regulatory advice.
+
+## Current Scope
+
+- The application searches a static snapshot of public healthcare data.
+- The vector index is built locally from the loaded dataset.
+- Data-quality rules inspect the available fields and linked records.
+- Gemini or Grok can be configured to summarize retrieved information.
+- A deterministic TF-IDF mode is available without an LLM or embedding model.
+- The system has not been independently validated for real healthcare operations.
+
+## Architecture
+
+```mermaid
+flowchart TD
+    A[CSV datasets] --> B[Clean and validate fields]
+    B --> C[Aggregate hospital and provider records]
+    C --> D[Build searchable documents]
+    D --> E[FAISS or TF-IDF index]
+    F[User query] --> G[LangGraph workflow]
+    E --> G
+    G --> H[Retrieved records and data checks]
+    H --> I[Optional LLM summary]
+    I --> J[FastAPI and React interface]
+```
+
+## Query Workflow
+
+Each query passes through five LangGraph nodes that share a structured state object:
+
+1. **Query planning** — extracts the requested location and facility capability.
+2. **Retrieval** — searches the FAISS index or TF-IDF fallback.
+3. **Record checks** — flags missing fields, low retrieval confidence, and configured data-quality conditions.
+4. **Gap calculation** — computes descriptive measures such as service coverage and linked-provider density.
+5. **Recommendation mapping** — maps detected conditions to predefined operational suggestions.
+
+An optional LLM converts the structured results into a readable summary. The workflow trace, retrieved records, and calculated fields remain available separately from the generated text.
+
+Calling these stages workflow nodes is more precise than treating each deterministic processing step as an independent autonomous agent.
+
+## Technology
 
 | Layer | Technology |
-|---|---|
-| Agent orchestration | LangGraph (5-node StateGraph) |
-| Semantic search | FAISS + sentence-transformers (`all-MiniLM-L6-v2`) |
-| LLM / RAG synthesis | Gemini 2.5 Flash (Google AI Studio) |
-| Backend (production) | FastAPI + Pydantic v2 |
-| Backend (lightweight) | Python stdlib only (no ML deps) |
+| --- | --- |
+| Workflow orchestration | LangGraph `StateGraph` |
+| Dense retrieval | FAISS and `all-MiniLM-L6-v2` |
+| Lexical retrieval | TF-IDF fallback |
+| Optional text generation | Gemini or Grok provider integration |
+| API | FastAPI and Pydantic |
+| Lightweight API | Python standard-library server |
 | Frontend | React |
-| Data | 4 CSV files — hospitals, doctors, departments, summaries |
+| Testing | pytest |
 
----
+## Data
 
-## Agent Pipeline
+The documented dataset snapshot contains:
 
-Every query runs through a 5-node LangGraph graph. Nodes share one `AgentState` object; each node reads the state, does its work, and returns only the fields it updates.
+| Data | Records |
+| --- | ---: |
+| Hospitals | 5,335 |
+| Provider rows | 536,723 |
+| Searchable documents | Approximately 250,000 |
 
-```
-Query
-  │
-  ▼
-[1] Query Planner     — extracts intent, state/city filter, capability filter
-  │
-  ▼
-[2] Retrieval         — FAISS semantic search (or TF-IDF fallback), location filter
-  │
-  ▼
-[3] Validation        — flags missing data, low confidence, quality issues
-  │
-  ▼
-[4] Gap Analysis      — computes ER/ICU coverage, doctor density, specialist gaps
-  │
-  ▼
-[5] Recommendation    — maps each gap to prioritised staffing/investment actions
-  │
-  ▼
-RAG Answer Synthesis  — LLM narrates the computed facts (Gemini 2.5 Flash)
-```
+The project documentation identifies the source files as public CMS datasets. Counts describe the snapshot used by this repository and may differ across dataset releases or preprocessing configurations.
 
-The graph is compiled once at import time and re-invoked per request. The retriever (FAISS or TF-IDF) is injected at call time via `config["configurable"]`, so the same compiled graph handles both backends without rebuilding.
+No patient records are used by the documented pipeline.
 
----
+## Retrieval
+
+### Dense Retrieval
+
+Hospital documents are embedded using `all-MiniLM-L6-v2` and stored in a FAISS inner-product index. Metadata is stored separately and used to filter or interpret retrieved records.
+
+### TF-IDF Fallback
+
+The lightweight mode uses lexical TF-IDF retrieval and deterministic response templates. It avoids the embedding and LLM dependencies and provides a baseline for retrieval evaluation.
+
+### Capability-Aware Reranking
+
+When the query planner identifies a requested capability, such as emergency or cardiac services, the retriever can rerank candidate hospitals using the corresponding structured field.
+
+This reranking combines semantic similarity with an explicit dataset attribute. Its evaluation should therefore be interpreted as hybrid retrieval, not as embedding-only performance.
+
+## Retrieval Evaluation
+
+The repository reports an exploratory evaluation using eight queries with relevance labels derived from state and capability fields.
+
+| Method | Precision@5 | Precision@10 |
+| --- | ---: | ---: |
+| TF-IDF baseline | 0.42 | 0.39 |
+| FAISS with sentence embeddings | 0.90 | 0.91 |
+| FAISS with capability-aware reranking | 0.95 | 0.96 |
+
+In this test set, dense retrieval returned more records matching the defined labels than the TF-IDF baseline. Capability-aware reranking produced the highest reported precision.
+
+These values come from only eight queries and a specific rule-based relevance definition. They are useful for checking the implementation and comparing configurations, but they are not sufficient to establish general retrieval performance.
+
+A stronger evaluation would include more queries, multiple relevance judgments, ambiguous requests, failure cases, and metrics such as recall, nDCG, and confidence intervals.
+
+## Data-Quality Checks
+
+The validation stage checks the consistency and completeness of fields available in the loaded snapshot. Example conditions include:
+
+- A facility capability is present but no corresponding provider rows were linked.
+- A quality field is missing or outside an expected range.
+- A facility has a low reported rating in the source data.
+- Retrieved records do not satisfy an explicitly requested capability.
+
+These checks identify conditions in the assembled dataset. For example, “no linked doctor records” means that the ingestion pipeline did not associate provider rows with the facility; it does not establish that the hospital employs no doctors.
+
+The checks are not clinical validation and do not determine whether a facility is safe, appropriate, or adequately staffed.
+
+## Optional RAG Summary
+
+When an LLM provider is configured, the application supplies retrieved records and calculated fields as context for a generated response.
+
+The generated summary is a convenience layer over the structured results. LLM output may omit context, misstate a field, or introduce unsupported language. Users should inspect the retrieved records and source data rather than relying on the generated response alone.
 
 ## Quick Start
 
-### Production (FastAPI + FAISS + LLM)
+### Full Local Setup
 
 ```bash
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+git clone https://github.com/dhyanagni2001-commits/Agentic-AI-Healthcare-Intelligence-System.git
+cd Agentic-AI-Healthcare-Intelligence-System
 
-export GEMINI_API_KEY=your_key_here   # free at aistudio.google.com/apikey
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+```
 
+Configure an LLM provider only if generated summaries are needed:
+
+```bash
+export GEMINI_API_KEY="your-key"
+export LLM_PROVIDER="gemini"
+```
+
+Start the FastAPI backend:
+
+```bash
 uvicorn backend.main_fastapi:app --port 8000
-cd frontend && npm install && npm start
 ```
 
-First run builds the FAISS index (~3–5 min for 257K vectors). Subsequent restarts load from disk cache in seconds.
-
-> **macOS note:** The `KMP_DUPLICATE_LIB_OK` and `OMP_NUM_THREADS` flags are set automatically in code to prevent a known libomp conflict between PyTorch and FAISS on macOS. No manual env var setup needed.
-
-### Lightweight (stdlib only, no ML stack)
+Start the frontend in another terminal:
 
 ```bash
-pip install pydantic
-python3 server.py
-cd frontend && npm install && npm start
+cd frontend
+npm install
+npm start
 ```
 
-Uses TF-IDF retrieval and returns deterministic template answers (no LLM key needed).
+The first embedding run builds and stores the FAISS index. Build time depends on the machine, dataset size, and embedding configuration.
 
-| URL | Description |
-|---|---|
-| `http://localhost:8000` | Backend API |
-| `http://localhost:3000` | React frontend |
-| `http://localhost:8000/docs` | FastAPI auto-docs (production only) |
-| `http://localhost:8000/health` | Health check |
+### Lightweight Mode
 
----
+The lightweight server uses TF-IDF retrieval and deterministic response templates:
+
+```bash
+python -m pip install pydantic
+python3 server.py
+```
+
+This mode demonstrates dataset browsing and lexical retrieval without loading FAISS, sentence transformers, or an LLM.
+
+## Local Addresses
+
+| Service | Address |
+| --- | --- |
+| Backend API | `http://localhost:8000` |
+| React frontend | `http://localhost:3000` |
+| FastAPI documentation | `http://localhost:8000/docs` |
+| Health endpoint | `http://localhost:8000/health` |
 
 ## Configuration
 
-| Env var | Required | Default | Description |
-|---|---|---|---|
-| `GEMINI_API_KEY` | Yes (production) | — | Google AI Studio key (free tier) |
-| `GROK_API_KEY` | No | — | xAI Grok key (optional secondary LLM) |
-| `LLM_PROVIDER` | No | `gemini` | `gemini` or `grok` |
+| Variable | Required | Default | Purpose |
+| --- | --- | --- | --- |
+| `GEMINI_API_KEY` | For Gemini summaries | Unset | Authenticate with the configured Gemini provider |
+| `GROK_API_KEY` | For Grok summaries | Unset | Authenticate with the configured Grok provider |
+| `LLM_PROVIDER` | No | `gemini` | Select the configured LLM integration |
 
----
+Keep API keys outside source control. The deterministic lightweight mode can be used when no LLM key is configured.
 
-## API Reference
+## API
 
-All endpoints are available on both the production FastAPI server and the lightweight stdlib server.
+### `GET /health`
 
-### GET `/health`
-Returns server status and whether the index is ready and working well.
+Returns service status and index readiness.
 
-### GET `/stats`
-Dataset-wide statistics: total hospitals, states covered, emergency services coverage, doctor totals, type distribution.
+### `GET /stats`
 
-### GET `/hospitals`
-Paginated list of hospitals with optional filters.
+Returns descriptive statistics for the loaded dataset snapshot.
 
-| Query param | Type | Example |
-|---|---|---|
-| `page` | int | `1` |
-| `per_page` | int | `20` |
-| `state` | string | `TX` |
-| `city` | string | `Houston` |
-| `has_emergency` | bool | `true` |
-| `min_rating` | int | `3` |
-| `hospital_type` | string | `Acute Care` |
+### `GET /hospitals`
 
-### GET `/hospitals/{facility_id}`
-Returns a single hospital record by CMS facility ID.
+Returns a paginated list of hospital records. Supported filters include:
 
-### GET `/gaps`
-Runs gap analysis for a region.
+- `page`
+- `per_page`
+- `state`
+- `city`
+- `has_emergency`
+- `min_rating`
+- `hospital_type`
 
-| Query param | Type | Example |
-|---|---|---|
-| `state` | string | `TX` |
-| `city` | string | `Houston` |
+Example:
 
-### POST `/query`
-Main agentic endpoint. Runs the full 5-agent pipeline and returns an LLM-synthesised answer.
+```bash
+curl "http://localhost:8000/hospitals?state=TX&city=Houston&page=1"
+```
+
+### `GET /hospitals/{facility_id}`
+
+Returns the hospital record associated with a facility identifier in the loaded data.
+
+### `GET /gaps`
+
+Runs the configured descriptive gap calculations for a state or city.
+
+```bash
+curl "http://localhost:8000/gaps?state=TX&city=Houston"
+```
+
+The output reflects rule-based calculations over the available dataset and is not a clinical or regulatory assessment.
+
+### `POST /query`
+
+Runs the retrieval and analysis workflow.
 
 ```json
 {
-  "query": "Which hospitals in Texas lack ICU?",
+  "query": "Which hospitals in Texas have ICU information?",
   "state_filter": "TX",
   "city_filter": null,
   "include_reasoning": true,
@@ -142,138 +257,154 @@ Main agentic endpoint. Runs the full 5-agent pipeline and returns an LLM-synthes
 }
 ```
 
-Response includes: `answer`, `reasoning_steps` (one per agent), `gaps_identified`, `recommendations`, `retrieved_documents`, `confidence`.
+The response can include:
 
-### POST `/parse`
-Parse free-text hospital descriptions into structured `HospitalRecord` objects using regex-based IDP.
+- A generated or deterministic answer
+- A workflow trace
+- Calculated gaps
+- Rule-based suggestions
+- Retrieved documents
+- A pipeline confidence value
+
+The workflow trace describes processing stages and outputs; it should not be treated as hidden model chain-of-thought.
+
+### `POST /parse`
+
+Parses supported fields from a free-text hospital description using regular expressions.
 
 ```json
-{ "text": "St. Mary Medical Center in Dallas, TX. Has ICU, emergency. 15 doctors.", "strict_mode": false }
+{
+  "text": "Example Medical Center in Dallas, TX. Has ICU and emergency services.",
+  "strict_mode": false
+}
 ```
 
-### POST `/validate`
-Validate a hospital record for clinical data quality issues (missing capabilities, low ratings, no doctors).
+This endpoint is a rule-based parser, not a general document-understanding model.
+
+### `POST /validate`
+
+Runs configured completeness and consistency checks for a hospital record.
 
 ```json
-{ "facility_id": "670055" }
+{
+  "facility_id": "670055"
+}
 ```
-
-
----
 
 ## Project Structure
 
-```
+```text
 .
 ├── backend/
 │   ├── agents/
-│   │   └── healthcare_agent.py     # LangGraph 5-agent graph + RAG synthesis
+│   │   └── healthcare_agent.py      # LangGraph workflow
 │   ├── ingestion/
-│   │   ├── aggregate_doctors.py    # streams 536K rows → per-(hospital,specialty) aggregates
-│   │   ├── clean.py                # loggable CSV field cleaning (nullish, bool, int)
-│   │   ├── documents.py            # builds SearchableDocument objects for embedding
-│   │   ├── pipeline.py             # end-to-end ingestion entry point
-│   │   └── schemas_pydantic.py     # Pydantic boundary validators for raw CSV rows
+│   │   ├── aggregate_doctors.py     # Provider aggregation
+│   │   ├── clean.py                 # CSV field cleaning
+│   │   ├── documents.py             # Search-document construction
+│   │   ├── pipeline.py              # Ingestion workflow
+│   │   └── schemas_pydantic.py      # Input validation models
 │   ├── models/
-│   │   └── schemas.py              # stdlib dataclasses: HospitalRecord, AgentResponse, etc.
+│   │   └── schemas.py               # Application data structures
 │   ├── prompts/
-│   │   └── templates.py            # RAG prompt templates (kept separate for easy tuning)
+│   │   └── templates.py             # RAG prompt templates
 │   ├── services/
-│   │   ├── data_loader.py          # loads + merges 4 CSVs → HospitalRecord dict, JSON cache
-│   │   ├── embedding_service.py    # singleton sentence-transformers model (all-MiniLM-L6-v2)
-│   │   ├── gap_detection.py        # rule-based ER/ICU/doctor/specialist/quality gap checks
-│   │   ├── hybrid_index.py         # VectorHospitalIndex: FAISS search + filter fallback
-│   │   ├── idp_service.py          # regex-based intelligent document parsing
-│   │   ├── legacy_tfidf_service.py # TF-IDF index (stdlib fallback + benchmark baseline)
-│   │   ├── llm_service.py          # pluggable LLM providers: Gemini (default), Grok
-│   │   ├── rag_pipeline.py         # explicit RAG: embed → retrieve → context → LLM
-│   │   ├── recommendation_engine.py# maps detected gaps → prioritised recommendations
-│   │   ├── validation_service.py   # clinical data quality validation rules
-│   │   └── vector_store.py         # FAISS IndexFlatIP wrapper with metadata sidecar
-│   └── main_fastapi.py             # FastAPI app: routes, Pydantic models, lifespan
-├── frontend/                       # React dashboard
-├── data/                           # CSV data files (gitignored — large files)
+│   │   ├── data_loader.py           # Dataset loading and joining
+│   │   ├── embedding_service.py     # Sentence-transformer model
+│   │   ├── gap_detection.py         # Rule-based descriptive checks
+│   │   ├── hybrid_index.py          # FAISS retrieval and reranking
+│   │   ├── idp_service.py           # Regex-based text parser
+│   │   ├── legacy_tfidf_service.py  # Lexical retrieval fallback
+│   │   ├── llm_service.py           # Optional LLM integrations
+│   │   ├── rag_pipeline.py          # Retrieval and summary pipeline
+│   │   ├── recommendation_engine.py # Rule-to-suggestion mapping
+│   │   ├── validation_service.py    # Completeness and consistency rules
+│   │   └── vector_store.py          # FAISS index wrapper
+│   └── main_fastapi.py              # FastAPI application
+├── frontend/                        # React application
+├── data/                            # Local data files
 ├── tests/
-│   ├── test_all.py                 # 55 unit tests (stdlib only — no ML deps)
-│   ├── test_embedding_retrieval.py # FAISS/embeddings integration tests
-│   ├── test_main_fastapi.py        # FastAPI endpoint tests
-│   └── test_rag_pipeline.py        # RAG pipeline tests
-├── server.py                       # Lightweight stdlib HTTP server (no FastAPI)
+│   ├── test_all.py
+│   ├── test_embedding_retrieval.py
+│   ├── test_main_fastapi.py
+│   └── test_rag_pipeline.py
+├── server.py                        # Lightweight HTTP server
 └── requirements.txt
 ```
 
----
+## Tests
 
-## Running Tests
+Run the core tests without the ML dependencies:
 
 ```bash
-# Core tests (no ML stack needed)
 python3 tests/test_all.py
+```
 
-# Or with pytest
+Run them with pytest:
+
+```bash
 python3 -m pytest tests/test_all.py -v
+```
 
-# Full integration tests (requires FAISS + sentence-transformers)
+Run the full integration suite after installing all dependencies:
+
+```bash
 python3 -m pytest tests/ -v
 ```
 
----
+The test suite covers application logic, API behavior, retrieval integration, and the RAG pipeline. Tests using mocked providers verify control flow but do not validate the behavior of an external LLM service.
 
-## Data Scale
+## Design Decisions and Tradeoffs
 
-| Dataset | Records |
-|---|---|
-| US Hospitals | 5,335 |
-| Doctors | 536,723 |
-| Departments | aggregated per hospital |
-| Searchable documents (embedded) | ~250K vectors |
+### Dense Retrieval and TF-IDF
 
-Data sourced from CMS (Centers for Medicare & Medicaid Services) public datasets.
+Dense embeddings can match related terms that do not share exact tokens. They require additional dependencies, model loading time, memory, and index generation.
 
----
+TF-IDF is faster to set up and easier to inspect but depends more heavily on lexical overlap.
 
-## Retrieval Evaluation: FAISS vs TF-IDF Baseline
+### Structured Filters and Semantic Search
 
-8 queries evaluated against verifiable ground truth (state + capability label, e.g. "cardiac care New York" → NY hospitals with `cardiac_care=True`). Measured **without** location filter to test pure retrieval quality.
+State, city, and capability requirements can be represented as structured filters rather than inferred only through similarity. Combining filters with semantic retrieval improves control but makes performance dependent on the completeness of structured fields.
 
-| Metric | TF-IDF (baseline) | FAISS + embeddings | FAISS + cap-boost |
-|---|---|---|---|
-| Precision@5 | 0.42 | 0.90 | **0.95** |
-| Precision@10 | 0.39 | 0.91 | **0.96** |
+### Rule-Based Data Checks
 
-**Cap-boost** re-ranks FAISS candidates by applying a 1.3× score multiplier to hospitals that possess the queried capability (detected by the Query Planner agent). This is implemented in `VectorHospitalIndex.search()` via the `cap_filter` parameter and wired through the agent pipeline — it's live in the production query path, not just an eval trick.
+Rules are deterministic and easy to test. However, a flagged record may reflect missing, stale, or incorrectly joined data rather than an actual problem at the facility.
 
-Adding the location filter barely moves FAISS (P@10: 0.96 → 0.97), confirming the embedding does the real work — not the filter. TF-IDF is unchanged either way, meaning it finds the right state via keyword match but fails to rank by capability relevance.
+### LLM Summaries
 
-The gap is clearest on semantic synonym queries:
+An LLM can make structured output easier to read, but it adds cost, latency, provider dependency, and the possibility of unsupported statements. The underlying records should remain visible for verification.
 
-| Query | TF-IDF P@10 | FAISS P@10 | FAISS + cap-boost P@10 |
-|---|---|---|---|
-| "cardiac care New York" | 0.00 | 0.70 | 0.70 |
-| "oncology cancer hospital Illinois" | 0.00 | **1.00** | **1.00** |
-| "pediatric hospital Florida" | 0.10 | 1.00 | **1.00** |
-| "emergency hospital Texas" | 0.50 | 0.80 | **1.00** |
+### Cached Local Index
 
-TF-IDF scores zero on "cardiac care" and "oncology cancer" because `care` and `cancer` are high-frequency tokens with near-zero IDF weight in a healthcare corpus. The embedding model captures semantic meaning regardless of exact token overlap. The TF-IDF index is kept as a zero-dependency fallback and retrieval benchmark.
+Persisting the FAISS index reduces restart time. The index must be rebuilt when the source data or document-construction logic changes.
 
----
+## Limitations
 
-## Validation Catching Real Data Issues
+- The retrieval evaluation contains only eight queries.
+- Relevance labels are derived from structured state and capability fields.
+- The data is a static snapshot and may be incomplete or outdated.
+- Linked-provider counts depend on the quality of joins between source files.
+- Data-quality flags are heuristic and are not clinical conclusions.
+- Rule-based recommendations have not been validated by healthcare professionals.
+- LLM-generated summaries may contain unsupported or incorrect statements.
+- The project does not provide patient-specific information or medical advice.
+- The application has not been security-reviewed for public deployment.
+- Performance and load characteristics have not been documented.
 
-Running the validation agent against the full dataset surfaces concrete problems in the CMS data. Example — `TX00026`:
+## Possible Extensions
 
-```
-Query:    "Find surgical hospitals in Austin, TX"
-Hospital: Texas Veterans Hospital — Austin, TX (Acute Care)
-Risk:     CRITICAL
+- Expand the retrieval evaluation with more queries and independent relevance judgments.
+- Add source citations and dataset-version metadata to every returned record.
+- Evaluate embedding alternatives and hybrid ranking methods.
+- Add automated checks for stale indexes when data changes.
+- Measure index build time, query latency, memory use, and API throughput.
+- Evaluate LLM summaries for faithfulness to retrieved records.
+- Add authentication, authorization, rate limiting, and audit-log controls.
+- Review data-quality rules with healthcare-domain experts.
+- Replace broad recommendation text with neutral descriptions of observed data conditions.
 
-Issues flagged by the validation agent:
-  [HIGH] doctor_count       — Surgery capability reported but zero doctors on record
-  [HIGH] quality.overall_rating — Emergency-capable hospital has a 1/5 rating
-  [HIGH] quality             — 3 quality metrics below national average
-                               (mortality, safety, readmission)
-```
+## What I Learned
 
-This is a real record in the CMS dataset. The hospital reports surgical and emergency capability but has no staff on record and sits at the bottom of every quality metric. Without the validation step, it would appear as a top result for "surgical hospitals in Austin" with no warning. The validation agent flags it as CRITICAL and the recommendation engine generates a quality-improvement action for it.
+This project helped me understand how to combine ingestion, schema validation, semantic retrieval, structured filters, workflow orchestration, and an API around a large public dataset.
 
-Across the full dataset: **628 hospitals** report surgery capability with zero doctors, and **984** are emergency-capable with an overall rating of ≤ 2/5 — both caught automatically on every query.
+It also showed why healthcare-related software requires careful language. A missing linked record is not evidence that a service or employee is absent, a heuristic flag is not clinical validation, and an LLM summary should not replace inspection of the underlying data.
