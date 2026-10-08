@@ -28,7 +28,7 @@ The project focuses on data exploration and retrieval. Any generated recommendat
 - Data-quality rules inspect the available fields and linked records.
 - Gemini, Grok, or a self-hosted vLLM server can be configured to summarize retrieved information; answers can be streamed with their sources.
 - Without an LLM, or when the LLM times out or errors, answers fall back to computed facts.
-- The API runs locally, in Docker, or on Kubernetes (CPU path validated on kind; GPU/vLLM path pending validation).
+- The API runs locally, in Docker, or on Kubernetes (CPU path validated on kind; the Kubernetes GPU overlay is not yet validated). vLLM itself has been benchmarked on an NVIDIA T4.
 - A deterministic TF-IDF mode is available without an LLM or embedding model.
 - The system has not been independently validated for real healthcare operations.
 
@@ -129,6 +129,21 @@ Answer quality (grounding of LLM text in retrieved evidence) is measured separat
 - 2.9% of numbers were unsupported, mostly wrong sums
 
 Every flag was verified by hand ([details](docs/RETRIEVAL_AUDIT.md#answer-quality-kept-separate-from-retrieval)).
+
+## Serving Performance
+
+vLLM 0.31.0 was benchmarked model-only on one NVIDIA T4 (16 GB), serving `Qwen2.5-1.5B-Instruct` in fp16, with streaming, 128 max output tokens, 64 requests per level and 0 errors at every level ([full report](docs/BENCHMARKS.md#verified-result-vllm-on-an-nvidia-t4-model-only)):
+
+| Concurrent requests | Output tok/s | Time to first token p50 | Per-token latency p50 |
+| ---: | ---: | ---: | ---: |
+| 1 | 54 | 41 ms | 18 ms |
+| 8 | 431 | 52 ms | 16 ms |
+| 32 | 1,060 | 105 ms | 23 ms |
+
+- **Batching:** continuous batching raised throughput about 20× from 1 to 32 concurrent requests, while per-token latency rose only from 18 to 23 ms.
+- **Hardware limit:** single-request decoding reached about 59% of the T4's memory-bandwidth limit, which is about 11 ms per token for these 3.24 GiB of weights.
+- **Short prompts only:** the prompts were about 50 tokens. Real HealthIQ prompts carry retrieved evidence (about 450–800 tokens: 10 snippets of up to 220 characters plus facts), so time to first token will be higher. That end-to-end run is still pending.
+- **Laptop comparison:** for contrast, llama.cpp on an Apple M5 Pro (4-bit model, 4 request slots) plateaued at 369 tok/s with 1.2 s time to first token at 8 concurrent requests.
 
 ## Data-Quality Checks
 
@@ -461,7 +476,7 @@ Persisting the FAISS index reduces restart time. The index must be rebuilt when 
 
 - Retrieval labels are rule-derived, not human judgments; see the [audit](docs/RETRIEVAL_AUDIT.md).
 - `data/all_us_hospitals.csv` shows signs of being synthetic (see the audit's data caveat).
-- vLLM serving performance on a GPU has not been measured yet ([pending](docs/BENCHMARKS.md#pending-gpu-validation)); only llama.cpp on an Apple M5 Pro has.
+- vLLM has been benchmarked model-only on a single T4 ([results](docs/BENCHMARKS.md#verified-result-vllm-on-an-nvidia-t4-model-only)); HealthIQ end to end on vLLM and the Kubernetes GPU overlay are [still pending](docs/BENCHMARKS.md#still-pending).
 - The RAG and streaming path does not apply the planner's state filter, so hospitals from other states can reach the answer (e.g. York, PA for a New York query).
 - The data is a static snapshot and may be incomplete or outdated.
 - Linked-provider counts depend on the quality of joins between source files.
@@ -470,11 +485,11 @@ Persisting the FAISS index reduces restart time. The index must be rebuilt when 
 - LLM-generated summaries may contain unsupported or incorrect statements.
 - The project does not provide patient-specific information or medical advice.
 - The application has not been security-reviewed for public deployment.
-- Load characteristics are documented for the CPU application path only ([benchmarks](docs/BENCHMARKS.md)).
+- Load characteristics are documented for the CPU application path, llama.cpp on a laptop, and vLLM on a single T4 ([benchmarks](docs/BENCHMARKS.md)).
 
 ## Possible Extensions
 
-- Run the vLLM benchmarks and answer-grounding evaluation on a GPU ([commands](docs/BENCHMARKS.md#pending-gpu-validation)).
+- Run HealthIQ end to end on vLLM, plus the answer-grounding evaluation with the fp16 model ([commands](docs/BENCHMARKS.md#still-pending)).
 - Apply planner state/city filters to documents in the RAG and streaming path, before the prompt is built.
 - Add human relevance judgments to the retrieval evaluation.
 - Batch query embeddings or move them to the GPU; CPU retrieval is the bottleneck under concurrent load.
