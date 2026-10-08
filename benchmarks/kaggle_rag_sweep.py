@@ -27,6 +27,14 @@ assert os.path.exists("bench_serving.py"), "bench_serving.py missing — rerun t
 print("workload:", RAG)
 
 
+def healthy(timeout=2):
+    """vLLM's /health returns 200 with an EMPTY body — don't parse it as JSON."""
+    try:
+        return urllib.request.urlopen(URL + "/health", timeout=timeout).status == 200
+    except Exception:
+        return False
+
+
 def get(path, data=None, timeout=5):
     req = urllib.request.Request(URL + path, data=json.dumps(data).encode() if data else None,
                                  headers={"Content-Type": "application/json"})
@@ -56,10 +64,11 @@ for _ in range(120):
     if proc.poll() is not None:
         print(open(f"{OUT}/vllm_nocache.log").read()[-3000:])
         raise SystemExit(f"vLLM exited with code {proc.returncode}")
-    try:
-        get("/health", timeout=2); break
-    except Exception:
-        time.sleep(5)
+    if healthy():
+        break
+    time.sleep(5)
+else:
+    raise SystemExit("vLLM not healthy after 600s — check " + f"{OUT}/vllm_nocache.log")
 print(f"vLLM ready in {time.time() - t0:.0f}s")
 cfg = open(f"{OUT}/vllm_nocache.log").read()
 print("prefix caching disabled:", "enable_prefix_caching=False" in cfg)

@@ -132,18 +132,22 @@ Every flag was verified by hand ([details](docs/RETRIEVAL_AUDIT.md#answer-qualit
 
 ## Serving Performance
 
-vLLM 0.31.0 was benchmarked model-only on one NVIDIA T4 (16 GB), serving `Qwen2.5-1.5B-Instruct` in fp16, with streaming, 128 max output tokens, 64 requests per level and 0 errors at every level ([full report](docs/BENCHMARKS.md#verified-result-vllm-on-an-nvidia-t4-model-only)):
+vLLM 0.31.0 was benchmarked on one NVIDIA T4 (16 GB), serving `Qwen2.5-1.5B-Instruct` in fp16 with streaming and 128 max output tokens. Each configuration ran 3 times (mean ± std), with **0 errors in 2,688 requests**. Full methodology is in [docs/BENCHMARKS.md](docs/BENCHMARKS.md).
 
-| Concurrent requests | Output tok/s | Time to first token p50 | Per-token latency p50 |
-| ---: | ---: | ---: | ---: |
-| 1 | 54 | 41 ms | 18 ms |
-| 8 | 431 | 52 ms | 16 ms |
-| 32 | 1,060 | 105 ms | 23 ms |
+**With real HealthIQ RAG prompts** (median 536 tokens, prefix caching off):
 
-- **Batching:** continuous batching raised throughput about 20× from 1 to 32 concurrent requests, while per-token latency rose only from 18 to 23 ms.
-- **Hardware limit:** single-request decoding reached about 59% of the T4's memory-bandwidth limit, which is about 11 ms per token for these 3.24 GiB of weights.
-- **Short prompts only:** the prompts were about 50 tokens. Real HealthIQ prompts carry retrieved evidence (about 450–800 tokens: 10 snippets of up to 220 characters plus facts), so time to first token will be higher. That end-to-end run is still pending.
-- **Laptop comparison:** for contrast, llama.cpp on an Apple M5 Pro (4-bit model, 4 request slots) plateaued at 369 tok/s with 1.2 s time to first token at 8 concurrent requests.
+| Concurrent requests | Output tok/s | Requests/s | Time to first token p50 / p99 | Per-token latency p50 |
+| ---: | ---: | ---: | ---: | ---: |
+| 1 | 54.6 ± 0.8 | 0.4 | 155 / 236 ms | 17.0 ms |
+| 8 | 272.1 ± 0.4 | 2.1 | 628 / 1,190 ms | 20.4 ms |
+| 32 | 442.4 ± 0.9 | 3.5 | 1,404 / 4,651 ms | 37.5 ms |
+| 128 | 556.2 ± 0.1 | 4.4 | 2,150 / 19,267 ms | 89.4 ms |
+
+- **Capacity:** one T4 serves about **2 RAG answers/s with first-token p99 around 1.2 s** (8 concurrent requests). Throughput saturates around 32–64 concurrent requests, after which extra load only lengthens the queue. At that point, cap concurrency per replica and add replicas.
+- **Prompt length matters more than model speed.** With short ~50-token prompts, the same server reached 1,055 ± 6 tok/s at 32 concurrent requests with a 95 ms first-token time. The ~540-token RAG prompts cut throughput by 58% and raise time to first token 15×, because every new request's prefill competes with other requests' decoding.
+- **Hardware limit:** single-request decoding runs at about 59% of the T4's memory-bandwidth limit (about 11 ms per token for 3.24 GiB of weights). The T4 can't use FlashAttention, so vLLM falls back to Triton attention.
+- **Laptop comparison:** llama.cpp on an Apple M5 Pro (4-bit model, 4 request slots) plateaued at 369 tok/s with 1.2 s time to first token at 8 concurrent short-prompt requests.
+- **Still pending:** the full HealthIQ API on the GPU host. Retrieval adds 11–23 ms p50 at low load on CPU.
 
 ## Data-Quality Checks
 
@@ -476,7 +480,7 @@ Persisting the FAISS index reduces restart time. The index must be rebuilt when 
 
 - Retrieval labels are rule-derived, not human judgments; see the [audit](docs/RETRIEVAL_AUDIT.md).
 - `data/all_us_hospitals.csv` shows signs of being synthetic (see the audit's data caveat).
-- vLLM has been benchmarked model-only on a single T4 ([results](docs/BENCHMARKS.md#verified-result-vllm-on-an-nvidia-t4-model-only)); HealthIQ end to end on vLLM and the Kubernetes GPU overlay are [still pending](docs/BENCHMARKS.md#still-pending).
+- vLLM has been benchmarked on a single T4 with short and real RAG prompts ([results](docs/BENCHMARKS.md#verified-result-vllm-on-a-t4-with-real-rag-prompts-3-repeats)); the full HealthIQ API on a GPU host and the Kubernetes GPU overlay are [still pending](docs/BENCHMARKS.md#still-pending).
 - The RAG and streaming path does not apply the planner's state filter, so hospitals from other states can reach the answer (e.g. York, PA for a New York query).
 - The data is a static snapshot and may be incomplete or outdated.
 - Linked-provider counts depend on the quality of joins between source files.
