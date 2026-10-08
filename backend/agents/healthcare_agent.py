@@ -17,7 +17,7 @@ is only imported for static type-checking, never at runtime.
 from __future__ import annotations
 import re, logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, TYPE_CHECKING
+from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING
 
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import RunnableConfig
@@ -87,6 +87,29 @@ class AgentState:
 # ── Agents ─────────────────────────────────────────────────────────────────────
 # Each agent is a LangGraph node: `AgentState -> Partial<AgentState>`.
 
+def parse_location(query: str, state_filter: Optional[str] = None,
+                   city_filter: Optional[str] = None) -> Tuple[Optional[str], Optional[str]]:
+    """(state, city) named in the query text, falling back to the given
+    filters. Shared with rag_pipeline so the RAG/streaming path scopes
+    evidence to the same location the planner would."""
+    q = query.lower()
+    # Longest first, so "west virginia" is not read as "virginia".
+    for name in sorted(_STATE_NAMES, key=len, reverse=True):
+        if name in q:
+            state_filter = _STATE_NAMES[name]; break
+    if not state_filter:
+        m = re.search(r"\b([A-Z]{2})\b", query)
+        if m and m.group(1) in _ABBREVS:
+            state_filter = m.group(1)
+
+    m = re.search(r"\bin\s+([A-Z][a-z]+(?: [A-Z][a-z]+)*)", query)
+    # "in California" names a state, not a city — a city filter on it matches
+    # nothing and silently drops retrieval to an unranked state listing.
+    if m and m.group(1).lower() not in _STATE_NAMES:
+        city_filter = m.group(1)
+    return state_filter, city_filter
+
+
 def query_planner_agent(state: AgentState) -> Dict[str, Any]:
     """Extracts intent, state, city, and capability/specialty filters from
     the raw query text."""
@@ -94,21 +117,7 @@ def query_planner_agent(state: AgentState) -> Dict[str, Any]:
     intents = [k for k, pats in _INTENTS.items() if any(re.search(p, q) for p in pats)]
     intents = intents or ["hospital_search"]
 
-    state_filter = state.state_filter
-    for name, abbr in _STATE_NAMES.items():
-        if name in q:
-            state_filter = abbr; break
-    if not state_filter:
-        m = re.search(r"\b([A-Z]{2})\b", state.query)
-        if m and m.group(1) in _ABBREVS:
-            state_filter = m.group(1)
-
-    city_filter = state.city_filter
-    m = re.search(r"\bin\s+([A-Z][a-z]+(?: [A-Z][a-z]+)*)", state.query)
-    # "in California" names a state, not a city — a city filter on it matches
-    # nothing and silently drops retrieval to an unranked state listing.
-    if m and m.group(1).lower() not in _STATE_NAMES:
-        city_filter = m.group(1)
+    state_filter, city_filter = parse_location(state.query, state.state_filter, state.city_filter)
 
     cap_filter = state.cap_filter
     padded = f" {re.sub(r'[^a-z0-9]+', ' ', q)} "  # so " er " can't match inside "offer "
@@ -305,7 +314,9 @@ def run_agent(query: str, index: VectorHospitalIndex,
     retrieved_documents: List[Dict] = []
     if hasattr(index, "search_documents"):
         try:
-            raw = index.search_documents(state.query, top_k=max_results)
+            raw = index.search_documents(state.query, top_k=max_results,
+                                         state_filter=state.state_filter,
+                                         city_filter=state.city_filter)
             retrieved_documents = [{
                 "id": doc.id, "doc_type": doc.doc_type,
                 "snippet": doc.text[:220], "score": round(score, 4),

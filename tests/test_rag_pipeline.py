@@ -46,6 +46,22 @@ class TestRAGPipelineMockedLLM(unittest.TestCase):
         self.assertTrue(all(h.state == "CA" for h in result.retrieved_hospitals))
 
     @patch("backend.services.rag_pipeline.llm_generate")
+    def test_state_filter_scopes_evidence_in_prompt(self, mock_generate):
+        mock_generate.return_value = "answer"
+        result = run_rag("cardiac care emergency", self.idx, top_k=3, state_filter="TX")
+        self.assertEqual({d["metadata"]["facility_id"] for d in result.retrieved_documents}, {"TX001"})
+        self.assertNotIn("nyc cardiac institute", mock_generate.call_args.args[0])
+
+    @patch("backend.services.rag_pipeline.llm_generate")
+    def test_state_named_in_query_scopes_evidence(self, mock_generate):
+        # Regression: York, PA reached answers about New York because the RAG
+        # path never applied the planner's location (docs/RETRIEVAL_AUDIT.md).
+        mock_generate.return_value = "answer"
+        result = run_rag("cardiac care hospitals in Texas", self.idx, top_k=3)
+        self.assertEqual({d["metadata"]["facility_id"] for d in result.retrieved_documents}, {"TX001"})
+        self.assertTrue(all(h.state == "TX" for h in result.retrieved_hospitals))
+
+    @patch("backend.services.rag_pipeline.llm_generate")
     def test_to_dict_serializable(self, mock_generate):
         mock_generate.return_value = "answer"
         result = run_rag("hospital", self.idx, top_k=3)

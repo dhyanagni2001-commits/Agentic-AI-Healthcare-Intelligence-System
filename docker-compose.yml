@@ -29,7 +29,7 @@ services:
 
   vllm:
     profiles: [gpu]
-    image: vllm/vllm-openai:v0.10.1
+    image: vllm/vllm-openai:v0.31.0
     command: ["--model", "${VLLM_MODEL:-Qwen/Qwen2.5-1.5B-Instruct}", "--max-model-len", "4096"]
     ports: ["8001:8000"]
     ipc: host

@@ -291,6 +291,11 @@ class TestPlannerStateNotCity(unittest.TestCase):
         p = query_planner_agent(AgentState(query="Find hospitals in Houston, TX"))
         self.assertEqual((p["state_filter"], p["city_filter"]), ("TX", "Houston"))
 
+    def test_west_virginia_is_not_virginia(self):
+        from backend.agents.healthcare_agent import AgentState, query_planner_agent
+        p = query_planner_agent(AgentState(query="Cardiac hospitals in West Virginia"))
+        self.assertEqual(p["state_filter"], "WV")
+
     def test_er_keyword_needs_word_boundary(self):
         from backend.agents.healthcare_agent import AgentState, query_planner_agent
         self.assertEqual(query_planner_agent(AgentState(

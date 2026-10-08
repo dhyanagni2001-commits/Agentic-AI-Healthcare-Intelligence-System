@@ -10,11 +10,11 @@
     "n_queries": 30,
     "fallback_rate": 0.0,
     "unsupported_citation_rate": 0.0,
-    "out_of_state_citation_rate": 0.035,
-    "unsupported_number_rate": 0.029,
-    "total_citations": 198,
-    "total_numbers": 279,
-    "answers_with_any_issue": 7
+    "out_of_state_citation_rate": 0.0,
+    "unsupported_number_rate": 0.027,
+    "total_citations": 195,
+    "total_numbers": 260,
+    "answers_with_any_issue": 5
   },
   "rows": [
     {
@@ -179,13 +179,10 @@
       "fallback": false,
       "cited": 8,
       "unsupported_citations": [],
-      "out_of_state_citations": [
-        "Manhattan Healthcare",
-        "York Healthcare"
-      ],
-      "numbers": 18,
+      "out_of_state_citations": [],
+      "numbers": 3,
       "unsupported_numbers": [],
-      "answer": "New York offers several hospitals that provide emergency services. Among the hospitals with emergency services, the average number of doctors assigned is 277.0. Here are some hospitals that offer emergency services:\n\n1. **New York Regional Hospital** - This hospital has 12 doctors assigned to the emergency medicine department.\n2. **New York University Hospital** - With 10 doctors assigned, this hospital also provides emergency services.\n3. **New York Community Hospital** - Having 12 doctors assigned, this hospital offers emergency services.\n4. **New York City Hospital** - This critical access hospital has 17 doctors assigned to the emergency medicine department.\n5. **New York Hospital (New York City)** - This critical access hospital offers emergency services, including ICU, surgery, maternity, pediatrics, rehabilitation, mental health, cardiac care, oncology, and trauma.\n6. **Manhattan Healthcare** - This hospital has 1 doctor assigned to the emergency medicine department.\n7. **York Healthcare** - With 8 doctors assigned, this hospital provides emergency services.\n8. **New York Hospital** - This hospital has 9 doctors assigned to the emergency medicine department.\n9. **New York Clinic** - This critical access hospital has 13 doctors assigned to the emergency medicine department.\n\nThese hospitals collectively provide a wide range of emergency services, including emergency medicine, ICU, surgery, and other specialized services."
+      "answer": "New York offers several hospitals that provide emergency services. Among the hospitals with emergency services, the New York Regional Hospital, New York University Hospital, and New York Community Hospital each have 12 doctors assigned to their emergency medicine departments. Additionally, the New York City Hospital and New York Hospital both have 17 doctors assigned to their emergency medicine departments. The New York Clinic, New York City Healthcare, and New York Healthcare each have 13 doctors assigned to their emergency medicine departments. These hospitals collectively provide emergency services to the residents of New York."
     },
     {
       "id": "field-canon-15",
@@ -273,15 +270,12 @@
       "id": "field-canon-22",
       "query": "Which hospitals in New York offer mental health?",
       "fallback": false,
-      "cited": 6,
+      "cited": 4,
       "unsupported_citations": [],
-      "out_of_state_citations": [
-        "Manhattan Healthcare",
-        "York Healthcare"
-      ],
-      "numbers": 4,
+      "out_of_state_citations": [],
+      "numbers": 3,
       "unsupported_numbers": [],
-      "answer": "New York offers several hospitals that provide mental health services. Among the top-ranked hospitals, Manhattan Healthcare and York Healthcare both have psychiatry departments with 8 doctors assigned each. New York Community Hospital and New York Regional Hospital both have psychiatry departments with 8 doctors assigned as well. Additionally, New York Medical Center and New York City Healthcare both have psychiatry departments with 4 and 2 doctors assigned, respectively. These hospitals provide emergency services and mental health capabilities, though some have lower overall ratings."
+      "answer": "New York offers several hospitals that provide mental health services. Among the hospitals with emergency services, psychiatry departments have varying levels of doctor assignments. For instance, New York Community Hospital in Yonkers has 0 doctors assigned, while New York Regional Hospital in Schenectady has 8 doctors assigned. In terms of ICU capabilities, all the hospitals listed have emergency services, indicating they can handle critical care needs. The psychiatry departments at these hospitals have an average of 179.8 doctors assigned. Therefore, hospitals like New York Community Hospital, New York Regional Hospital, New York City Memorial Hospital, and New York Health System offer mental health services, with some having emergency services and ICU capabilities."
     },
     {
       "id": "field-canon-23",
@@ -333,20 +327,15 @@
       "id": "field-para-3",
       "query": "Show facilities with chemotherapy and tumor treatment services in Virginia",
       "fallback": false,
-      "cited": 10,
+      "cited": 9,
       "unsupported_citations": [],
-      "out_of_state_citations": [
-        "West Virginia Community Hospital",
-        "West Virginia Regional Hospital",
-        "West Virginia Regional Medical Center"
-      ],
-      "numbers": 15,
+      "out_of_state_citations": [],
+      "numbers": 12,
       "unsupported_numbers": [
-        "45",
-        "45",
-        "21.5"
+        "30",
+        "30"
       ],
-      "answer": "The hospitals in Virginia that offer chemotherapy and tumor treatment services include:\n\n- Virginia Regional Medical Center: 7 doctors assigned\n- Virginia Community Hospital: 18 doctors assigned\n- West Virginia Community Hospital: 11 doctors assigned\n- Virginia Clinic: 10 doctors assigned\n- Virginia Regional Hospital: 3 doctors assigned\n- Virginia Health Center: 8 doctors assigned\n- Virginia Healthcare: 8 doctors assigned\n- Virginia Memorial Hospital: 2 doctors assigned\n- West Virginia Regional Medical Center: 4 doctors assigned\n- West Virginia Regional Hospital: 1 doctor assigned\n\nThese hospitals collectively provide a total of 45 doctors assigned to the oncology department, which is 45/208 = 21.5% of the average doctor count across the 10 hospitals."
+      "answer": "The hospitals in Virginia that offer chemotherapy and tumor treatment services include:\n\n- Virginia Regional Medical Center: 7 doctors assigned\n- Virginia Community Hospital: 18 doctors assigned\n- Virginia Clinic: 10 doctors assigned\n- Virginia Regional Hospital: 3 doctors assigned\n- Virginia Health Center: 8 doctors assigned\n- Virginia Healthcare: 8 doctors assigned\n- Virginia Memorial Hospital: 2 doctors assigned\n- Virginia Medical Center: 3 doctors assigned\n- Virginia Hospital: 9 doctors assigned\n\nThese hospitals collectively have 30 doctors assigned to the oncology department, providing a total of 30 doctors across the 10 hospitals."
     },
     {
       "id": "field-para-4",

@@ -2,7 +2,7 @@
 
 HealthIQ is a hospital-data search and analysis application built with FastAPI, React, FAISS, sentence-transformer embeddings, LangGraph, and optional LLM-generated summaries.
 
-The project combines public hospital records, provider data, semantic retrieval, rule-based data-quality checks, and a structured query workflow. It is intended for software and data-engineering experimentation—not for medical diagnosis, treatment, hospital selection, or clinical decision-making.
+The project combines a hospital and provider dataset, semantic retrieval, rule-based data-quality checks, and a structured query workflow. The data is labeled as public CMS records, but the main hospital file looks synthetic (see the [data caveat](docs/RETRIEVAL_AUDIT.md#data-caveat)), so every result describes this snapshot, not real US hospitals. The project is intended for software and data-engineering experimentation, not for medical diagnosis, treatment, hospital selection, or clinical decision-making.
 
 **Docs:** [Setup and demo](docs/SETUP.md) · [Architecture](docs/ARCHITECTURE.md) · [Serving benchmarks](docs/BENCHMARKS.md) · [Retrieval audit](docs/RETRIEVAL_AUDIT.md)
 
@@ -23,7 +23,7 @@ The project focuses on data exploration and retrieval. Any generated recommendat
 
 ## Current Scope
 
-- The application searches a static snapshot of public healthcare data.
+- The application searches a static dataset snapshot (likely synthetic; see [Data](#data)).
 - The vector index is built locally from the loaded dataset.
 - Data-quality rules inspect the available fields and linked records.
 - Gemini, Grok, or a self-hosted vLLM server can be configured to summarize retrieved information; answers can be streamed with their sources.
@@ -118,15 +118,17 @@ An earlier version of this README reported Precision@10 rising from 0.39 (TF-IDF
 
 Held-out results with 95% bootstrap CIs (`python -m backend.evaluation.retrieval_audit`):
 
-| Held-out test (labels independent of the reranker) | TF-IDF | Dense (FAISS + MiniLM) |
-| --- | ---: | ---: |
-| Known-item lookup, MRR@10 (40 queries) | 0.24 [0.14, 0.36] | 0.94 [0.88, 0.99] |
-| Hospital-type queries, P@10 (16 queries; random in-state = 0.17) | 0.43 | 0.45 [0.31, 0.60] |
+| Held-out test (labels independent of the reranker) | TF-IDF, no filters | Dense, no filters | TF-IDF agent | Dense agent (production) |
+| --- | ---: | ---: | ---: | ---: |
+| Known-item lookup, MRR@10 (40 queries) | 0.24 [0.14, 0.36] | 0.94 [0.88, 0.99] | 0.43 [0.31, 0.55] | 0.97 [0.93, 1.00] |
+| Hospital-type queries, P@10 (16 queries; random in-state = 0.17) | 0.43 [0.36, 0.51] | 0.45 [0.31, 0.60] | 0.47 [0.37, 0.57] | 0.44 [0.29, 0.60] |
+
+"No filters" searches the query text alone. "Agent" runs the full planner path (state/city filters and capability boost) over that retriever. Dense retrieval clearly wins known-item lookup. On hospital-type queries all four are within noise, so dense shows no advantage there.
 
 Answer quality (grounding of LLM text in retrieved evidence) is measured separately by `backend/evaluation/answer_quality.py`. With a local Qwen2.5-1.5B (4-bit, llama.cpp, temperature 0) on 30 held-out queries:
-- no answer cited a hospital absent from the evidence (0/198)
-- 3.5% of citations named a hospital in the wrong state
-- 2.9% of numbers were unsupported, mostly wrong sums
+- no answer cited a hospital absent from the evidence (0/195)
+- no citation named a hospital in the wrong state (0/195, down from 3.5% before the RAG path applied the query's state filter)
+- 2.7% of numbers were unsupported, all wrong sums
 
 Every flag was verified by hand ([details](docs/RETRIEVAL_AUDIT.md#answer-quality-kept-separate-from-retrieval)).
 
@@ -438,7 +440,7 @@ Run the full integration suite after installing all dependencies:
 python3 -m pytest tests/ -v
 ```
 
-The test suite (106 tests) covers application logic, API behavior, retrieval integration, the RAG pipeline, the vLLM provider against an OpenAI-compatible stub (timeouts, 5xx, dropped streams), SSE event order and source preservation, deployment smoke checks, and the benchmark harness. Tests using mocked providers verify control flow but do not validate the behavior of an external LLM service.
+The test suite (109 tests) covers application logic, API behavior, retrieval integration, the RAG pipeline, the vLLM provider against an OpenAI-compatible stub (timeouts, 5xx, dropped streams), SSE event order and source preservation, deployment smoke checks, and the benchmark harness. Tests using mocked providers verify control flow but do not validate the behavior of an external LLM service.
 
 ## Design Decisions and Tradeoffs
 
@@ -481,7 +483,6 @@ Persisting the FAISS index reduces restart time. The index must be rebuilt when 
 - Retrieval labels are rule-derived, not human judgments; see the [audit](docs/RETRIEVAL_AUDIT.md).
 - `data/all_us_hospitals.csv` shows signs of being synthetic (see the audit's data caveat).
 - vLLM has been benchmarked on a single T4 with short and real RAG prompts ([results](docs/BENCHMARKS.md#verified-result-vllm-on-a-t4-with-real-rag-prompts-3-repeats)); the full HealthIQ API on a GPU host and the Kubernetes GPU overlay are [still pending](docs/BENCHMARKS.md#still-pending).
-- The RAG and streaming path does not apply the planner's state filter, so hospitals from other states can reach the answer (e.g. York, PA for a New York query).
 - The data is a static snapshot and may be incomplete or outdated.
 - Linked-provider counts depend on the quality of joins between source files.
 - Data-quality flags are heuristic and are not clinical conclusions.
@@ -494,7 +495,6 @@ Persisting the FAISS index reduces restart time. The index must be rebuilt when 
 ## Possible Extensions
 
 - Run HealthIQ end to end on vLLM, plus the answer-grounding evaluation with the fp16 model ([commands](docs/BENCHMARKS.md#still-pending)).
-- Apply planner state/city filters to documents in the RAG and streaming path, before the prompt is built.
 - Add human relevance judgments to the retrieval evaluation.
 - Batch query embeddings or move them to the GPU; CPU retrieval is the bottleneck under concurrent load.
 - Bake the index into a read-only volume so the API can run more than one replica.

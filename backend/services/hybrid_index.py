@@ -82,14 +82,33 @@ class VectorHospitalIndex:
 
         return results
 
-    def search_documents(self, query: str, top_k: int = 10) -> List[Tuple[SearchableDocument, float]]:
+    def search_documents(self, query: str, top_k: int = 10,
+                         state_filter: Optional[str] = None,
+                         city_filter: Optional[str] = None) -> List[Tuple[SearchableDocument, float]]:
         """Raw retrieval across ALL document types (hospital/doctor/department/
         gap), without collapsing to one-per-hospital — used by the RAG
         pipeline for evidence/citations, where doc_type and snippet text
-        matter, unlike the legacy-compatible `search()` above."""
+        matter, unlike the legacy-compatible `search()` above.
+
+        Location filters apply to the documents themselves, so out-of-area
+        evidence never reaches the prompt."""
         if not self._built:
             raise RuntimeError("Index not built — call build() first")
-        return self._store.search(query, top_k=top_k)
+        if not (state_filter or city_filter):
+            return self._store.search(query, top_k=top_k)
+        out = []
+        for doc, score in self._store.search(query, top_k=top_k * 15):
+            h = self._records.get(doc.metadata.get("facility_id"))
+            state = h.state if h else doc.metadata.get("state")
+            city = h.city if h else doc.metadata.get("city")
+            if state_filter and (state or "").upper() != state_filter.upper():
+                continue
+            if city_filter and city_filter.lower() not in (city or "").lower():
+                continue
+            out.append((doc, score))
+            if len(out) == top_k:
+                break
+        return out
 
     def filter_by_state(self, state: str) -> List[HospitalRecord]:
         return [h for h in self._records.values() if (h.state or "").upper() == state.upper()]

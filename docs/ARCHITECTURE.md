@@ -54,7 +54,7 @@ Sources are sent before generation, so citations survive a mid-stream failure. `
   - Liveness uses `/health`.
   - The pod runs as non-root UID 10001.
 - **gpu overlay:** adds a vLLM Deployment and Service.
-  - Image `vllm/vllm-openai:v0.10.1`, Qwen2.5-1.5B-Instruct.
+  - Image `vllm/vllm-openai:v0.31.0` (the version benchmarked on the T4), Qwen2.5-1.5B-Instruct.
   - Resources: `nvidia.com/gpu: 1`, 8–16 Gi memory, a memory-backed `/dev/shm`, a GPU toleration, and a 20-minute startup budget.
   - It switches the ConfigMap to `LLM_PROVIDER=vllm`.
   - It needs the NVIDIA device plugin.

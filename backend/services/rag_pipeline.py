@@ -12,6 +12,7 @@ import time
 from dataclasses import dataclass, field, asdict
 from typing import Any, Dict, Iterator, List, Optional, Tuple
 
+from backend.agents.healthcare_agent import parse_location
 from backend.models.schemas import HospitalRecord
 from backend.services.hybrid_index import VectorHospitalIndex
 from backend.services.llm_service import (
@@ -75,8 +76,12 @@ def _retrieve_and_build_prompt(query: str,
     """Steps 1-3 shared by run_rag and stream_rag: retrieval, hospital
     resolution, and prompt construction. Returns (documents, physicians,
     hospitals, facts_block, prompt)."""
-    # 1. Embedding + FAISS retrieval (raw documents across all types)
-    raw_docs = index.search_documents(query, top_k=top_k)
+    # 1. Embedding + FAISS retrieval (raw documents across all types), scoped
+    #    to the location named in the query unless the caller passed filters
+    if not (state_filter or city_filter):
+        state_filter, city_filter = parse_location(query)
+    raw_docs = index.search_documents(query, top_k=top_k,
+                                      state_filter=state_filter, city_filter=city_filter)
 
     retrieved_documents: List[Dict[str, Any]] = []
     retrieved_physicians: List[Dict[str, Any]] = []
@@ -99,12 +104,6 @@ def _retrieve_and_build_prompt(query: str,
     # 2. Resolve hospital records referenced by any retrieved document type
     retrieved_hospitals = [h for fid in hospital_ids_seen
                             if (h := index.get_by_id(fid)) is not None]
-    if state_filter:
-        retrieved_hospitals = [h for h in retrieved_hospitals
-                                if (h.state or "").upper() == state_filter.upper()]
-    if city_filter:
-        retrieved_hospitals = [h for h in retrieved_hospitals
-                                if city_filter.lower() in (h.city or "").lower()]
 
     # 3. Context construction
     evidence_block = format_evidence_block(retrieved_documents)

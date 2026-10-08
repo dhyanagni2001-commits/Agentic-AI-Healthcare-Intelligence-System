@@ -7,7 +7,7 @@ You need Python 3.11 and the CSVs in `data/`. Docker is optional. A GPU is neede
 ```bash
 uv venv -p 3.11 .venv && uv pip install -p .venv -r requirements.txt pytest   # or python3.11 -m venv + pip
 source .venv/bin/activate
-python -m pytest -q                                   # 106 tests, ~10 s, no network/GPU
+python -m pytest -q                                   # 109 tests, ~10 s, no network/GPU
 LLM_PROVIDER=none uvicorn backend.main_fastapi:app --port 8000
 ```
 
