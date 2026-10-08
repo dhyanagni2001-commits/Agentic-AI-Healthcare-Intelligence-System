@@ -1,0 +1,161 @@
+{
+  "label": "llamacpp-m5pro-qwen1.5b-q4-llm",
+  "timestamp_utc": "2026-10-08T01:59:12Z",
+  "git_commit": "fb75030",
+  "target": "llm",
+  "url": "http://localhost:8001/v1",
+  "model": {
+    "model": "qwen2.5-1.5b-instruct-q4_k_m",
+    "served_models": [
+      "qwen2.5-1.5b-instruct-q4_k_m"
+    ]
+  },
+  "hardware": {
+    "client_platform": "macOS-27.0.1-arm64-arm-64bit",
+    "client_machine": "arm64",
+    "client_cpu_count": 15,
+    "python": "3.11.16",
+    "client_cpu": "Apple M5 Pro",
+    "client_mem_gb": 24.0,
+    "local_nvidia_smi": null,
+    "server_hardware_note": "Apple M5 Pro (24 GB unified memory), macOS; llama.cpp llama-server 0.4.1 (build 10964), Q4_K_M GGUF, 4 parallel slots, ctx 8192. NOT vLLM, NOT an NVIDIA GPU."
+  },
+  "workload": {
+    "file": "benchmarks/workloads/healthcare_queries.jsonl",
+    "sha256": "834b5968b9727a9e",
+    "num_prompts": 24,
+    "max_tokens": 128,
+    "max_results": 10,
+    "temperature": 0.0,
+    "warmup": 2,
+    "num_requests_per_level": 32
+  },
+  "levels": [
+    {
+      "concurrency": 1,
+      "num_requests": 32,
+      "succeeded": 32,
+      "error_rate": 0.0,
+      "errors": {},
+      "wall_time_s": 21.283,
+      "request_throughput_rps": 1.504,
+      "output_token_throughput_tps": 171.82,
+      "output_tokens_total": 3657,
+      "token_count_source": [
+        "usage"
+      ],
+      "ttft_ms": {
+        "n": 32,
+        "mean": 28.06,
+        "p50": 31.87,
+        "p90": 32.92,
+        "p99": 33.1
+      },
+      "itl_ms": {
+        "n": 3612,
+        "mean": 5.62,
+        "p50": 5.54,
+        "p90": 6.13,
+        "p99": 6.52
+      },
+      "tpot_ms": {
+        "n": 32,
+        "mean": 5.62,
+        "p50": 5.48,
+        "p90": 5.99,
+        "p99": 6.11
+      },
+      "e2e_ms": {
+        "n": 32,
+        "mean": 665.09,
+        "p50": 716.01,
+        "p90": 779.89,
+        "p99": 809.34
+      }
+    },
+    {
+      "concurrency": 4,
+      "num_requests": 32,
+      "succeeded": 32,
+      "error_rate": 0.0,
+      "errors": {},
+      "wall_time_s": 10.458,
+      "request_throughput_rps": 3.06,
+      "output_token_throughput_tps": 349.4,
+      "output_tokens_total": 3654,
+      "token_count_source": [
+        "usage"
+      ],
+      "ttft_ms": {
+        "n": 32,
+        "mean": 43.53,
+        "p50": 42.63,
+        "p90": 62.55,
+        "p99": 111.53
+      },
+      "itl_ms": {
+        "n": 3609,
+        "mean": 10.56,
+        "p50": 10.28,
+        "p90": 10.74,
+        "p99": 30.4
+      },
+      "tpot_ms": {
+        "n": 32,
+        "mean": 10.6,
+        "p50": 10.69,
+        "p90": 11.13,
+        "p99": 11.54
+      },
+      "e2e_ms": {
+        "n": 32,
+        "mean": 1239.18,
+        "p50": 1379.98,
+        "p90": 1450.92,
+        "p99": 1478.77
+      }
+    },
+    {
+      "concurrency": 8,
+      "num_requests": 32,
+      "succeeded": 32,
+      "error_rate": 0.0,
+      "errors": {},
+      "wall_time_s": 9.901,
+      "request_throughput_rps": 3.232,
+      "output_token_throughput_tps": 369.06,
+      "output_tokens_total": 3654,
+      "token_count_source": [
+        "usage"
+      ],
+      "ttft_ms": {
+        "n": 32,
+        "mean": 1052.25,
+        "p50": 1236.19,
+        "p90": 1344.83,
+        "p99": 1368.33
+      },
+      "itl_ms": {
+        "n": 3609,
+        "mean": 10.11,
+        "p50": 9.81,
+        "p90": 10.49,
+        "p99": 29.7
+      },
+      "tpot_ms": {
+        "n": 32,
+        "mean": 10.14,
+        "p50": 10.2,
+        "p90": 10.55,
+        "p99": 10.77
+      },
+      "e2e_ms": {
+        "n": 32,
+        "mean": 2197.13,
+        "p50": 2470.21,
+        "p90": 2633.61,
+        "p99": 2704.3
+      }
+    }
+  ]
+}

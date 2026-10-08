@@ -1,0 +1,185 @@
+{
+  "label": "llamacpp-m5pro-qwen1.5b-q4-app",
+  "timestamp_utc": "2026-10-08T02:00:12Z",
+  "git_commit": "fb75030",
+  "target": "app",
+  "url": "http://localhost:8000",
+  "model": {
+    "model": "qwen2.5-1.5b-instruct-q4_k_m",
+    "app_llm": {
+      "provider": "vllm",
+      "model": "qwen2.5-1.5b-instruct-q4_k_m",
+      "configured": true
+    },
+    "hospitals_loaded": 5335
+  },
+  "hardware": {
+    "client_platform": "macOS-27.0.1-arm64-arm-64bit",
+    "client_machine": "arm64",
+    "client_cpu_count": 15,
+    "python": "3.11.16",
+    "client_cpu": "Apple M5 Pro",
+    "client_mem_gb": 24.0,
+    "local_nvidia_smi": null,
+    "server_hardware_note": "API: local uvicorn (venv, macOS) on Apple M5 Pro 24 GB, LLM_TEMPERATURE=0, LLM_MAX_TOKENS=128. LLM: llama.cpp llama-server 0.4.1 (build 10964), Qwen2.5-1.5B-Instruct Q4_K_M GGUF, 4 slots, same machine. NOT vLLM, NOT an NVIDIA GPU."
+  },
+  "workload": {
+    "file": "benchmarks/workloads/healthcare_queries.jsonl",
+    "sha256": "834b5968b9727a9e",
+    "num_prompts": 24,
+    "max_tokens": 128,
+    "max_results": 10,
+    "temperature": 0.0,
+    "warmup": 2,
+    "num_requests_per_level": 32
+  },
+  "levels": [
+    {
+      "concurrency": 1,
+      "num_requests": 32,
+      "succeeded": 32,
+      "error_rate": 0.0,
+      "errors": {},
+      "wall_time_s": 24.83,
+      "request_throughput_rps": 1.289,
+      "output_token_throughput_tps": 152.72,
+      "output_tokens_total": 3792,
+      "token_count_source": [
+        "chunks"
+      ],
+      "ttft_ms": {
+        "n": 32,
+        "mean": 114.03,
+        "p50": 117.67,
+        "p90": 193.27,
+        "p99": 302.7
+      },
+      "itl_ms": {
+        "n": 3760,
+        "mean": 5.61,
+        "p50": 5.47,
+        "p90": 6.2,
+        "p99": 6.67
+      },
+      "tpot_ms": {
+        "n": 32,
+        "mean": 5.65,
+        "p50": 5.55,
+        "p90": 6.1,
+        "p99": 6.32
+      },
+      "e2e_ms": {
+        "n": 32,
+        "mean": 775.9,
+        "p50": 791.82,
+        "p90": 896.61,
+        "p99": 1100.14
+      },
+      "server_retrieval_ms": {
+        "n": 32,
+        "mean": 23.21,
+        "p50": 10.58,
+        "p90": 28.11,
+        "p99": 146.55
+      }
+    },
+    {
+      "concurrency": 4,
+      "num_requests": 32,
+      "succeeded": 32,
+      "error_rate": 0.0,
+      "errors": {},
+      "wall_time_s": 10.782,
+      "request_throughput_rps": 2.968,
+      "output_token_throughput_tps": 351.42,
+      "output_tokens_total": 3789,
+      "token_count_source": [
+        "chunks"
+      ],
+      "ttft_ms": {
+        "n": 32,
+        "mean": 51.48,
+        "p50": 41.68,
+        "p90": 101.08,
+        "p99": 106.53
+      },
+      "itl_ms": {
+        "n": 3757,
+        "mean": 10.47,
+        "p50": 10.29,
+        "p90": 11.34,
+        "p99": 15.4
+      },
+      "tpot_ms": {
+        "n": 32,
+        "mean": 10.51,
+        "p50": 10.58,
+        "p90": 11.17,
+        "p99": 11.32
+      },
+      "e2e_ms": {
+        "n": 32,
+        "mean": 1284.04,
+        "p50": 1385.82,
+        "p90": 1453.17,
+        "p99": 1465.48
+      },
+      "server_retrieval_ms": {
+        "n": 32,
+        "mean": 15.31,
+        "p50": 13.82,
+        "p90": 22.35,
+        "p99": 23.71
+      }
+    },
+    {
+      "concurrency": 8,
+      "num_requests": 32,
+      "succeeded": 32,
+      "error_rate": 0.0,
+      "errors": {},
+      "wall_time_s": 10.588,
+      "request_throughput_rps": 3.022,
+      "output_token_throughput_tps": 357.85,
+      "output_tokens_total": 3789,
+      "token_count_source": [
+        "chunks"
+      ],
+      "ttft_ms": {
+        "n": 32,
+        "mean": 1135.5,
+        "p50": 1356.36,
+        "p90": 1419.38,
+        "p99": 1447.16
+      },
+      "itl_ms": {
+        "n": 3757,
+        "mean": 10.52,
+        "p50": 10.39,
+        "p90": 11.28,
+        "p99": 14.73
+      },
+      "tpot_ms": {
+        "n": 32,
+        "mean": 10.58,
+        "p50": 10.59,
+        "p90": 11.02,
+        "p99": 11.71
+      },
+      "e2e_ms": {
+        "n": 32,
+        "mean": 2375.39,
+        "p50": 2653.54,
+        "p90": 2753.8,
+        "p99": 2802.98
+      },
+      "server_retrieval_ms": {
+        "n": 32,
+        "mean": 23.87,
+        "p50": 15.64,
+        "p90": 53.33,
+        "p99": 55.96
+      }
+    }
+  ]
+}

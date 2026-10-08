@@ -1,0 +1,19 @@
+# Adds a vLLM server on one NVIDIA GPU and points the API at it.
+# Requires the NVIDIA device plugin (nvidia.com/gpu resource) on the cluster.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+  - vllm.yaml
+patches:
+  - target: {kind: ConfigMap, name: healthiq-config}
+    patch: |-
+      - op: replace
+        path: /data/LLM_PROVIDER
+        value: vllm
+      - op: add
+        path: /data/VLLM_BASE_URL
+        value: http://vllm:8000/v1
+      - op: add
+        path: /data/VLLM_MODEL
+        value: Qwen/Qwen2.5-1.5B-Instruct

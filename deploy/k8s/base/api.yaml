@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthiq-api
+spec:
+  replicas: 1   # RWO data volume; scale out by baking the index into a read-only volume
+  selector:
+    matchLabels: {app: healthiq-api}
+  template:
+    metadata:
+      labels: {app: healthiq-api}
+    spec:
+      securityContext: {runAsNonRoot: true, runAsUser: 10001, fsGroup: 10001}
+      containers:
+        - name: api
+          image: healthiq-api:dev
+          imagePullPolicy: IfNotPresent
+          ports: [{name: http, containerPort: 8000}]
+          envFrom:
+            - configMapRef: {name: healthiq-config}
+            - secretRef: {name: healthiq-secrets, optional: true}
+          resources:
+            requests: {cpu: "1", memory: 1536Mi}
+            limits: {cpu: "2", memory: 3Gi}
+          # Startup loads ~258K vectors (or builds them on first run): allow up to 15 min.
+          startupProbe:
+            httpGet: {path: /health, port: http}
+            periodSeconds: 10
+            failureThreshold: 90
+          readinessProbe:
+            httpGet: {path: /ready, port: http}
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet: {path: /health, port: http}
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - {name: data, mountPath: /app/data}
+      volumes:
+        - name: data
+          persistentVolumeClaim: {claimName: healthiq-data}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: healthiq-api
+spec:
+  selector: {app: healthiq-api}
+  ports: [{name: http, port: 8000, targetPort: http}]

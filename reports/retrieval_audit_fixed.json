@@ -1,0 +1,373 @@
+{
+  "label": "planner_fixed",
+  "k": 10,
+  "queries_file": "backend/evaluation/retrieval_queries.jsonl",
+  "n_hospitals": 5335,
+  "n_vectors": 257700,
+  "planner": {
+    "state_scoped_queries": 84,
+    "state_parsed_as_city": 0
+  },
+  "results": {
+    "dev/field": {
+      "n_queries": 8,
+      "base_rate": {
+        "p@10": 0.686
+      },
+      "filter_only": {
+        "p@10": 1.0,
+        "p@10_ci95": [
+          1.0,
+          1.0
+        ],
+        "ndcg@10": 1.0,
+        "median_latency_ms": 0.0
+      },
+      "tfidf_raw": {
+        "p@10": 0.2,
+        "p@10_ci95": [
+          0.05,
+          0.4
+        ],
+        "ndcg@10": 0.205,
+        "median_latency_ms": 4.0
+      },
+      "dense_raw": {
+        "p@10": 0.9,
+        "p@10_ci95": [
+          0.825,
+          0.975
+        ],
+        "ndcg@10": 0.897,
+        "median_latency_ms": 13.8
+      },
+      "dense_state": {
+        "p@10": 0.925,
+        "p@10_ci95": [
+          0.838,
+          0.988
+        ],
+        "ndcg@10": 0.921,
+        "median_latency_ms": 11.3
+      },
+      "tfidf_agent": {
+        "p@10": 0.575,
+        "p@10_ci95": [
+          0.312,
+          0.825
+        ],
+        "ndcg@10": 0.625,
+        "median_latency_ms": 5.8
+      },
+      "dense_agent": {
+        "p@10": 1.0,
+        "p@10_ci95": [
+          1.0,
+          1.0
+        ],
+        "ndcg@10": 1.0,
+        "median_latency_ms": 12.0
+      }
+    },
+    "test/field/canon": {
+      "n_queries": 24,
+      "base_rate": {
+        "p@10": 0.691
+      },
+      "filter_only": {
+        "p@10": 1.0,
+        "p@10_ci95": [
+          1.0,
+          1.0
+        ],
+        "ndcg@10": 1.0,
+        "median_latency_ms": 0.0
+      },
+      "tfidf_raw": {
+        "p@10": 0.246,
+        "p@10_ci95": [
+          0.138,
+          0.362
+        ],
+        "ndcg@10": 0.23,
+        "median_latency_ms": 4.3
+      },
+      "dense_raw": {
+        "p@10": 0.904,
+        "p@10_ci95": [
+          0.858,
+          0.946
+        ],
+        "ndcg@10": 0.909,
+        "median_latency_ms": 10.1
+      },
+      "dense_state": {
+        "p@10": 0.921,
+        "p@10_ci95": [
+          0.883,
+          0.958
+        ],
+        "ndcg@10": 0.929,
+        "median_latency_ms": 10.4
+      },
+      "tfidf_agent": {
+        "p@10": 0.471,
+        "p@10_ci95": [
+          0.317,
+          0.625
+        ],
+        "ndcg@10": 0.51,
+        "median_latency_ms": 5.6
+      },
+      "dense_agent": {
+        "p@10": 1.0,
+        "p@10_ci95": [
+          1.0,
+          1.0
+        ],
+        "ndcg@10": 1.0,
+        "median_latency_ms": 10.7
+      }
+    },
+    "test/field/para": {
+      "n_queries": 24,
+      "base_rate": {
+        "p@10": 0.712
+      },
+      "filter_only": {
+        "p@10": 0.621,
+        "p@10_ci95": [
+          0.554,
+          0.688
+        ],
+        "ndcg@10": 0.615,
+        "median_latency_ms": 0.0
+      },
+      "tfidf_raw": {
+        "p@10": 0.15,
+        "p@10_ci95": [
+          0.075,
+          0.25
+        ],
+        "ndcg@10": 0.138,
+        "median_latency_ms": 4.6
+      },
+      "dense_raw": {
+        "p@10": 0.858,
+        "p@10_ci95": [
+          0.796,
+          0.917
+        ],
+        "ndcg@10": 0.87,
+        "median_latency_ms": 10.1
+      },
+      "dense_state": {
+        "p@10": 0.9,
+        "p@10_ci95": [
+          0.838,
+          0.95
+        ],
+        "ndcg@10": 0.915,
+        "median_latency_ms": 10.3
+      },
+      "tfidf_agent": {
+        "p@10": 0.204,
+        "p@10_ci95": [
+          0.108,
+          0.317
+        ],
+        "ndcg@10": 0.179,
+        "median_latency_ms": 4.8
+      },
+      "dense_agent": {
+        "p@10": 0.9,
+        "p@10_ci95": [
+          0.838,
+          0.95
+        ],
+        "ndcg@10": 0.915,
+        "median_latency_ms": 10.4
+      }
+    },
+    "test/hospital_type": {
+      "n_queries": 16,
+      "base_rate": {
+        "p@10": 0.173
+      },
+      "filter_only": {
+        "p@10": 0.231,
+        "p@10_ci95": [
+          0.15,
+          0.306
+        ],
+        "ndcg@10": 0.24,
+        "median_latency_ms": 0.0
+      },
+      "tfidf_raw": {
+        "p@10": 0.431,
+        "p@10_ci95": [
+          0.356,
+          0.506
+        ],
+        "ndcg@10": 0.481,
+        "median_latency_ms": 3.2
+      },
+      "dense_raw": {
+        "p@10": 0.45,
+        "p@10_ci95": [
+          0.306,
+          0.6
+        ],
+        "ndcg@10": 0.47,
+        "median_latency_ms": 10.4
+      },
+      "dense_state": {
+        "p@10": 0.45,
+        "p@10_ci95": [
+          0.306,
+          0.6
+        ],
+        "ndcg@10": 0.47,
+        "median_latency_ms": 10.2
+      },
+      "tfidf_agent": {
+        "p@10": 0.469,
+        "p@10_ci95": [
+          0.369,
+          0.569
+        ],
+        "ndcg@10": 0.582,
+        "median_latency_ms": 4.4
+      },
+      "dense_agent": {
+        "p@10": 0.444,
+        "p@10_ci95": [
+          0.294,
+          0.6
+        ],
+        "ndcg@10": 0.469,
+        "median_latency_ms": 10.0
+      }
+    },
+    "test/known_item": {
+      "n_queries": 40,
+      "base_rate": {
+        "p@10": 0.0
+      },
+      "filter_only": {
+        "mrr@10": 0.021,
+        "mrr@10_ci95": [
+          0.0,
+          0.058
+        ],
+        "hit@10": 0.05,
+        "median_latency_ms": 0.0
+      },
+      "tfidf_raw": {
+        "mrr@10": 0.239,
+        "mrr@10_ci95": [
+          0.139,
+          0.359
+        ],
+        "hit@10": 0.475,
+        "median_latency_ms": 4.2
+      },
+      "dense_raw": {
+        "mrr@10": 0.94,
+        "mrr@10_ci95": [
+          0.879,
+          0.988
+        ],
+        "hit@10": 1.0,
+        "median_latency_ms": 10.0
+      },
+      "dense_state": {
+        "mrr@10": 0.971,
+        "mrr@10_ci95": [
+          0.925,
+          1.0
+        ],
+        "hit@10": 1.0,
+        "median_latency_ms": 10.4
+      },
+      "tfidf_agent": {
+        "mrr@10": 0.429,
+        "mrr@10_ci95": [
+          0.312,
+          0.545
+        ],
+        "hit@10": 0.85,
+        "median_latency_ms": 4.9
+      },
+      "dense_agent": {
+        "mrr@10": 0.971,
+        "mrr@10_ci95": [
+          0.925,
+          1.0
+        ],
+        "hit@10": 1.0,
+        "median_latency_ms": 10.2
+      }
+    },
+    "test/ownership": {
+      "n_queries": 12,
+      "base_rate": {
+        "p@10": 0.155
+      },
+      "filter_only": {
+        "p@10": 0.142,
+        "p@10_ci95": [
+          0.083,
+          0.192
+        ],
+        "ndcg@10": 0.148,
+        "median_latency_ms": 0.0
+      },
+      "tfidf_raw": {
+        "p@10": 0.158,
+        "p@10_ci95": [
+          0.1,
+          0.217
+        ],
+        "ndcg@10": 0.186,
+        "median_latency_ms": 3.2
+      },
+      "dense_raw": {
+        "p@10": 0.192,
+        "p@10_ci95": [
+          0.117,
+          0.267
+        ],
+        "ndcg@10": 0.187,
+        "median_latency_ms": 11.2
+      },
+      "dense_state": {
+        "p@10": 0.192,
+        "p@10_ci95": [
+          0.117,
+          0.267
+        ],
+        "ndcg@10": 0.187,
+        "median_latency_ms": 10.4
+      },
+      "tfidf_agent": {
+        "p@10": 0.2,
+        "p@10_ci95": [
+          0.133,
+          0.258
+        ],
+        "ndcg@10": 0.231,
+        "median_latency_ms": 3.7
+      },
+      "dense_agent": {
+        "p@10": 0.192,
+        "p@10_ci95": [
+          0.117,
+          0.267
+        ],
+        "ndcg@10": 0.187,
+        "median_latency_ms": 12.2
+      }
+    }
+  }
+}

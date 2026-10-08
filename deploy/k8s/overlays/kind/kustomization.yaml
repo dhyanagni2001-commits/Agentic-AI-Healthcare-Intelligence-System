@@ -1,0 +1,18 @@
+# Local, no-GPU smoke test on kind: data comes from the host repo via the kind
+# extraMount (deploy/kind-config.yaml) instead of a provisioned PVC.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+patches:
+  - target: {kind: PersistentVolumeClaim, name: healthiq-data}
+    patch: |-
+      $patch: delete
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata: {name: healthiq-data}
+  - target: {kind: Deployment, name: healthiq-api}
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/volumes/0
+        value: {name: data, hostPath: {path: /healthiq-data, type: Directory}}

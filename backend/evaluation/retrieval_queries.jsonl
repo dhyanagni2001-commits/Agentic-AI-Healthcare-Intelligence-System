@@ -1,0 +1,124 @@
+{"id": "dev-0", "split": "dev", "label": "field", "query": "Emergency hospitals in Texas", "state": "TX", "cap": "emergency_services"}
+{"id": "dev-1", "split": "dev", "label": "field", "query": "Pediatric hospitals in California", "state": "CA", "cap": "pediatrics"}
+{"id": "dev-2", "split": "dev", "label": "field", "query": "Intensive care hospitals in Florida", "state": "FL", "cap": "icu"}
+{"id": "dev-3", "split": "dev", "label": "field", "query": "Cardiac care hospitals in New York", "state": "NY", "cap": "cardiac_care"}
+{"id": "dev-4", "split": "dev", "label": "field", "query": "Mental health hospitals in Ohio", "state": "OH", "cap": "mental_health"}
+{"id": "dev-5", "split": "dev", "label": "field", "query": "Maternity hospitals in Georgia", "state": "GA", "cap": "maternity"}
+{"id": "dev-6", "split": "dev", "label": "field", "query": "Surgical hospitals in Illinois", "state": "IL", "cap": "surgery"}
+{"id": "dev-7", "split": "dev", "label": "field", "query": "Oncology hospitals in Massachusetts", "state": "MA", "cap": "oncology"}
+{"id": "field-canon-0", "split": "test", "label": "field", "query": "Find pediatric hospitals in Virginia", "state": "VA", "cap": "pediatrics"}
+{"id": "field-canon-1", "split": "test", "label": "field", "query": "Find maternity hospitals in Pennsylvania", "state": "PA", "cap": "maternity"}
+{"id": "field-canon-2", "split": "test", "label": "field", "query": "Find cardiac care hospitals in Ohio", "state": "OH", "cap": "cardiac_care"}
+{"id": "field-canon-3", "split": "test", "label": "field", "query": "Show facilities with oncology services in Georgia", "state": "GA", "cap": "oncology"}
+{"id": "field-canon-4", "split": "test", "label": "field", "query": "Which hospitals in Ohio offer mental health?", "state": "OH", "cap": "mental_health"}
+{"id": "field-canon-5", "split": "test", "label": "field", "query": "Which hospitals in Arkansas offer emergency?", "state": "AR", "cap": "emergency_services"}
+{"id": "field-canon-6", "split": "test", "label": "field", "query": "Show facilities with intensive care services in Missouri", "state": "MO", "cap": "icu"}
+{"id": "field-canon-7", "split": "test", "label": "field", "query": "Show facilities with rehab services in Michigan", "state": "MI", "cap": "rehabilitation"}
+{"id": "field-canon-8", "split": "test", "label": "field", "query": "Which hospitals in Tennessee offer surgical?", "state": "TN", "cap": "surgery"}
+{"id": "field-canon-9", "split": "test", "label": "field", "query": "Find pediatric hospitals in Michigan", "state": "MI", "cap": "pediatrics"}
+{"id": "field-canon-10", "split": "test", "label": "field", "query": "Find maternity hospitals in Missouri", "state": "MO", "cap": "maternity"}
+{"id": "field-canon-11", "split": "test", "label": "field", "query": "Which hospitals in Arkansas offer cardiac care?", "state": "AR", "cap": "cardiac_care"}
+{"id": "field-canon-12", "split": "test", "label": "field", "query": "Show facilities with oncology services in Texas", "state": "TX", "cap": "oncology"}
+{"id": "field-canon-13", "split": "test", "label": "field", "query": "Find mental health hospitals in South Carolina", "state": "SC", "cap": "mental_health"}
+{"id": "field-canon-14", "split": "test", "label": "field", "query": "Which hospitals in New York offer emergency?", "state": "NY", "cap": "emergency_services"}
+{"id": "field-canon-15", "split": "test", "label": "field", "query": "Which hospitals in New York offer intensive care?", "state": "NY", "cap": "icu"}
+{"id": "field-canon-16", "split": "test", "label": "field", "query": "Which hospitals in Illinois offer rehab?", "state": "IL", "cap": "rehabilitation"}
+{"id": "field-canon-17", "split": "test", "label": "field", "query": "Which hospitals in California offer surgical?", "state": "CA", "cap": "surgery"}
+{"id": "field-canon-18", "split": "test", "label": "field", "query": "Which hospitals in Nebraska offer pediatric?", "state": "NE", "cap": "pediatrics"}
+{"id": "field-canon-19", "split": "test", "label": "field", "query": "Which hospitals in Mississippi offer maternity?", "state": "MS", "cap": "maternity"}
+{"id": "field-canon-20", "split": "test", "label": "field", "query": "Which hospitals in Massachusetts offer cardiac care?", "state": "MA", "cap": "cardiac_care"}
+{"id": "field-canon-21", "split": "test", "label": "field", "query": "Show facilities with oncology services in Kentucky", "state": "KY", "cap": "oncology"}
+{"id": "field-canon-22", "split": "test", "label": "field", "query": "Which hospitals in New York offer mental health?", "state": "NY", "cap": "mental_health"}
+{"id": "field-canon-23", "split": "test", "label": "field", "query": "Which hospitals in Mississippi offer emergency?", "state": "MS", "cap": "emergency_services"}
+{"id": "field-para-0", "split": "test", "label": "field", "query": "Find kids and infants hospitals in Nebraska", "state": "NE", "cap": "pediatrics"}
+{"id": "field-para-1", "split": "test", "label": "field", "query": "Show facilities with labor and delivery services in Nebraska", "state": "NE", "cap": "maternity"}
+{"id": "field-para-2", "split": "test", "label": "field", "query": "Which hospitals in Maryland offer coronary disease?", "state": "MD", "cap": "cardiac_care"}
+{"id": "field-para-3", "split": "test", "label": "field", "query": "Show facilities with chemotherapy and tumor treatment services in Virginia", "state": "VA", "cap": "oncology"}
+{"id": "field-para-4", "split": "test", "label": "field", "query": "Show facilities with behavioral health services in Minnesota", "state": "MN", "cap": "mental_health"}
+{"id": "field-para-5", "split": "test", "label": "field", "query": "Which hospitals in Georgia offer urgent care around the clock?", "state": "GA", "cap": "emergency_services"}
+{"id": "field-para-6", "split": "test", "label": "field", "query": "Show facilities with critically ill patients services in Nebraska", "state": "NE", "cap": "icu"}
+{"id": "field-para-7", "split": "test", "label": "field", "query": "Which hospitals in Colorado offer physical therapy after a stroke?", "state": "CO", "cap": "rehabilitation"}
+{"id": "field-para-8", "split": "test", "label": "field", "query": "Find operating rooms hospitals in Mississippi", "state": "MS", "cap": "surgery"}
+{"id": "field-para-9", "split": "test", "label": "field", "query": "Find kids and infants hospitals in Alabama", "state": "AL", "cap": "pediatrics"}
+{"id": "field-para-10", "split": "test", "label": "field", "query": "Find labor and delivery hospitals in New York", "state": "NY", "cap": "maternity"}
+{"id": "field-para-11", "split": "test", "label": "field", "query": "Find coronary disease hospitals in Alabama", "state": "AL", "cap": "cardiac_care"}
+{"id": "field-para-12", "split": "test", "label": "field", "query": "Find chemotherapy and tumor treatment hospitals in Virginia", "state": "VA", "cap": "oncology"}
+{"id": "field-para-13", "split": "test", "label": "field", "query": "Which hospitals in Arkansas offer behavioral health?", "state": "AR", "cap": "mental_health"}
+{"id": "field-para-14", "split": "test", "label": "field", "query": "Find urgent care around the clock hospitals in Massachusetts", "state": "MA", "cap": "emergency_services"}
+{"id": "field-para-15", "split": "test", "label": "field", "query": "Which hospitals in Oregon offer critically ill patients?", "state": "OR", "cap": "icu"}
+{"id": "field-para-16", "split": "test", "label": "field", "query": "Which hospitals in Oklahoma offer physical therapy after a stroke?", "state": "OK", "cap": "rehabilitation"}
+{"id": "field-para-17", "split": "test", "label": "field", "query": "Show facilities with operating rooms services in Texas", "state": "TX", "cap": "surgery"}
+{"id": "field-para-18", "split": "test", "label": "field", "query": "Find kids and infants hospitals in Georgia", "state": "GA", "cap": "pediatrics"}
+{"id": "field-para-19", "split": "test", "label": "field", "query": "Find labor and delivery hospitals in Illinois", "state": "IL", "cap": "maternity"}
+{"id": "field-para-20", "split": "test", "label": "field", "query": "Show facilities with coronary disease services in New York", "state": "NY", "cap": "cardiac_care"}
+{"id": "field-para-21", "split": "test", "label": "field", "query": "Which hospitals in Ohio offer chemotherapy and tumor treatment?", "state": "OH", "cap": "oncology"}
+{"id": "field-para-22", "split": "test", "label": "field", "query": "Find behavioral health hospitals in Arizona", "state": "AZ", "cap": "mental_health"}
+{"id": "field-para-23", "split": "test", "label": "field", "query": "Show facilities with urgent care around the clock services in Texas", "state": "TX", "cap": "emergency_services"}
+{"id": "type-0", "split": "test", "label": "hospital_type", "query": "Acute Care Hospitals in Washington", "state": "WA", "hospital_type": "Acute Care Hospital"}
+{"id": "type-1", "split": "test", "label": "hospital_type", "query": "Children's Hospitals in Massachusetts", "state": "MA", "hospital_type": "Children's Hospital"}
+{"id": "type-2", "split": "test", "label": "hospital_type", "query": "Critical Access Hospitals in New York", "state": "NY", "hospital_type": "Critical Access Hospital"}
+{"id": "type-3", "split": "test", "label": "hospital_type", "query": "Long-Term Care Hospitals in North Carolina", "state": "NC", "hospital_type": "Long-Term Care Hospital"}
+{"id": "type-4", "split": "test", "label": "hospital_type", "query": "Psychiatric Hospitals in Michigan", "state": "MI", "hospital_type": "Psychiatric Hospital"}
+{"id": "type-5", "split": "test", "label": "hospital_type", "query": "Rehabilitation Hospitals in New York", "state": "NY", "hospital_type": "Rehabilitation Hospital"}
+{"id": "type-6", "split": "test", "label": "hospital_type", "query": "Acute Care Hospitals in Georgia", "state": "GA", "hospital_type": "Acute Care Hospital"}
+{"id": "type-7", "split": "test", "label": "hospital_type", "query": "Children's Hospitals in Indiana", "state": "IN", "hospital_type": "Children's Hospital"}
+{"id": "type-8", "split": "test", "label": "hospital_type", "query": "Critical Access Hospitals in Nebraska", "state": "NE", "hospital_type": "Critical Access Hospital"}
+{"id": "type-9", "split": "test", "label": "hospital_type", "query": "Long-Term Care Hospitals in Kentucky", "state": "KY", "hospital_type": "Long-Term Care Hospital"}
+{"id": "type-10", "split": "test", "label": "hospital_type", "query": "Psychiatric Hospitals in Oregon", "state": "OR", "hospital_type": "Psychiatric Hospital"}
+{"id": "type-11", "split": "test", "label": "hospital_type", "query": "Rehabilitation Hospitals in Maryland", "state": "MD", "hospital_type": "Rehabilitation Hospital"}
+{"id": "type-12", "split": "test", "label": "hospital_type", "query": "Acute Care Hospitals in Colorado", "state": "CO", "hospital_type": "Acute Care Hospital"}
+{"id": "type-13", "split": "test", "label": "hospital_type", "query": "Children's Hospitals in Nebraska", "state": "NE", "hospital_type": "Children's Hospital"}
+{"id": "type-14", "split": "test", "label": "hospital_type", "query": "Critical Access Hospitals in California", "state": "CA", "hospital_type": "Critical Access Hospital"}
+{"id": "type-15", "split": "test", "label": "hospital_type", "query": "Long-Term Care Hospitals in Massachusetts", "state": "MA", "hospital_type": "Long-Term Care Hospital"}
+{"id": "owner-0", "split": "test", "label": "ownership", "query": "Government - Federal hospitals in Tennessee", "state": "TN", "ownership": "Government - Federal"}
+{"id": "owner-1", "split": "test", "label": "ownership", "query": "Government - Local hospitals in Oregon", "state": "OR", "ownership": "Government - Local"}
+{"id": "owner-2", "split": "test", "label": "ownership", "query": "Government - State hospitals in Texas", "state": "TX", "ownership": "Government - State"}
+{"id": "owner-3", "split": "test", "label": "ownership", "query": "Proprietary hospitals in Florida", "state": "FL", "ownership": "Proprietary"}
+{"id": "owner-4", "split": "test", "label": "ownership", "query": "Voluntary non-profit - Church hospitals in Tennessee", "state": "TN", "ownership": "Voluntary non-profit - Church"}
+{"id": "owner-5", "split": "test", "label": "ownership", "query": "Voluntary non-profit - Other hospitals in Arizona", "state": "AZ", "ownership": "Voluntary non-profit - Other"}
+{"id": "owner-6", "split": "test", "label": "ownership", "query": "Voluntary non-profit - Private hospitals in New Jersey", "state": "NJ", "ownership": "Voluntary non-profit - Private"}
+{"id": "owner-7", "split": "test", "label": "ownership", "query": "Government - Federal hospitals in Pennsylvania", "state": "PA", "ownership": "Government - Federal"}
+{"id": "owner-8", "split": "test", "label": "ownership", "query": "Government - Local hospitals in Michigan", "state": "MI", "ownership": "Government - Local"}
+{"id": "owner-9", "split": "test", "label": "ownership", "query": "Government - State hospitals in Maryland", "state": "MD", "ownership": "Government - State"}
+{"id": "owner-10", "split": "test", "label": "ownership", "query": "Proprietary hospitals in North Carolina", "state": "NC", "ownership": "Proprietary"}
+{"id": "owner-11", "split": "test", "label": "ownership", "query": "Voluntary non-profit - Church hospitals in Massachusetts", "state": "MA", "ownership": "Voluntary non-profit - Church"}
+{"id": "known-0", "split": "test", "label": "known_item", "query": "Kansas Medical Center in Lenexa, KS", "facility_id": "KS00056"}
+{"id": "known-1", "split": "test", "label": "known_item", "query": "Memorial Jose University Hospital in Broken Arrow, OK", "facility_id": "OK00094"}
+{"id": "known-2", "split": "test", "label": "known_item", "query": "St. Paul County Hospital in Troy, MI", "facility_id": "MI00108"}
+{"id": "known-3", "split": "test", "label": "known_item", "query": "Tennessee Clinic in Franklin, TN", "facility_id": "TN00036"}
+{"id": "known-4", "split": "test", "label": "known_item", "query": "St. Nancy Community Hospital in San Jose, CA", "facility_id": "CA00331"}
+{"id": "known-5", "split": "test", "label": "known_item", "query": "Memorial Jessica Children's Hospital in Fort Lauderdale, FL", "facility_id": "FL00002"}
+{"id": "known-6", "split": "test", "label": "known_item", "query": "Lakewood Children's Hospital in Lakewood, CO", "facility_id": "CO00066"}
+{"id": "known-7", "split": "test", "label": "known_item", "query": "General Richard City Hospital in New York City, NY", "facility_id": "NY00057"}
+{"id": "known-8", "split": "test", "label": "known_item", "query": "Chesapeake Children's Hospital in Chesapeake, VA", "facility_id": "VA00066"}
+{"id": "known-9", "split": "test", "label": "known_item", "query": "Connecticut Clinic in Danbury, CT", "facility_id": "CT00041"}
+{"id": "known-10", "split": "test", "label": "known_item", "query": "Mount Kenneth Health System in Albuquerque, NM", "facility_id": "NM00016"}
+{"id": "known-11", "split": "test", "label": "known_item", "query": "Sterling Heights Health System in Sterling Heights, MI", "facility_id": "MI00094"}
+{"id": "known-12", "split": "test", "label": "known_item", "query": "Memorial John Healthcare in Watertown, SD", "facility_id": "SD00040"}
+{"id": "known-13", "split": "test", "label": "known_item", "query": "Fargo Regional Medical Center in Fargo, ND", "facility_id": "ND00044"}
+{"id": "known-14", "split": "test", "label": "known_item", "query": "Akron Health Center in Akron, OH", "facility_id": "OH00031"}
+{"id": "known-15", "split": "test", "label": "known_item", "query": "Washington University Hospital in Kent, WA", "facility_id": "WA00087"}
+{"id": "known-16", "split": "test", "label": "known_item", "query": "Memorial Steven University Hospital in Ames, IA", "facility_id": "IA00095"}
+{"id": "known-17", "split": "test", "label": "known_item", "query": "Missouri Memorial Hospital in St. Charles, MO", "facility_id": "MO00083"}
+{"id": "known-18", "split": "test", "label": "known_item", "query": "Massachusetts Children's Hospital in Lowell, MA", "facility_id": "MA00007"}
+{"id": "known-19", "split": "test", "label": "known_item", "query": "St. Anthony Clinic in Long Beach, CA", "facility_id": "CA00101"}
+{"id": "known-20", "split": "test", "label": "known_item", "query": "Mount Edward Hospital in Alamogordo, NM", "facility_id": "NM00028"}
+{"id": "known-21", "split": "test", "label": "known_item", "query": "Memorial Michelle University Hospital in Tallahassee, FL", "facility_id": "FL00120"}
+{"id": "known-22", "split": "test", "label": "known_item", "query": "Memorial Larry University Hospital in Lubbock, TX", "facility_id": "TX00193"}
+{"id": "known-23", "split": "test", "label": "known_item", "query": "Memorial Donald Community Hospital in Raleigh, NC", "facility_id": "NC00117"}
+{"id": "known-24", "split": "test", "label": "known_item", "query": "Regional Richard Clinic in Nashville, TN", "facility_id": "TN00082"}
+{"id": "known-25", "split": "test", "label": "known_item", "query": "Norfolk Children's Hospital in Norfolk, VA", "facility_id": "VA00099"}
+{"id": "known-26", "split": "test", "label": "known_item", "query": "St. Kenneth University Hospital in Danbury, CT", "facility_id": "CT00030"}
+{"id": "known-27", "split": "test", "label": "known_item", "query": "Memorial Emily Regional Hospital in Fayetteville, AR", "facility_id": "AR00037"}
+{"id": "known-28", "split": "test", "label": "known_item", "query": "St. Joseph University Hospital in Norfolk, VA", "facility_id": "VA00079"}
+{"id": "known-29", "split": "test", "label": "known_item", "query": "Regional Joseph Memorial Hospital in Thornton, CO", "facility_id": "CO00017"}
+{"id": "known-30", "split": "test", "label": "known_item", "query": "Kihei Regional Medical Center in Kihei, HI", "facility_id": "HI00016"}
+{"id": "known-31", "split": "test", "label": "known_item", "query": "Mount Anthony University Hospital in Medford, OR", "facility_id": "OR00051"}
+{"id": "known-32", "split": "test", "label": "known_item", "query": "Minnesota Regional Hospital in St. Paul, MN", "facility_id": "MN00091"}
+{"id": "known-33", "split": "test", "label": "known_item", "query": "Illinois City Hospital in Elgin, IL", "facility_id": "IL00111"}
+{"id": "known-34", "split": "test", "label": "known_item", "query": "Green Bay Regional Medical Center in Green Bay, WI", "facility_id": "WI00083"}
+{"id": "known-35", "split": "test", "label": "known_item", "query": "Memorial Edward Regional Medical Center in Dickinson, ND", "facility_id": "ND00046"}
+{"id": "known-36", "split": "test", "label": "known_item", "query": "Shawnee County Hospital in Shawnee, KS", "facility_id": "KS00099"}
+{"id": "known-37", "split": "test", "label": "known_item", "query": "Memorial John Memorial Hospital in Jacksonville, FL", "facility_id": "FL00031"}
+{"id": "known-38", "split": "test", "label": "known_item", "query": "Illinois Healthcare in Aurora, IL", "facility_id": "IL00160"}
+{"id": "known-39", "split": "test", "label": "known_item", "query": "Hoover City Hospital in Hoover, AL", "facility_id": "AL00071"}

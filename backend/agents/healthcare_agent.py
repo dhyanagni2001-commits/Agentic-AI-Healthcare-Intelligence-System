@@ -29,7 +29,7 @@ from backend.models.schemas import (
 from backend.services.validation_service import validate_hospital
 from backend.services.gap_detection import analyse_region
 from backend.services.recommendation_engine import generate_recommendations
-from backend.services.llm_service import generate as llm_generate, LLMNotConfiguredError
+from backend.services.llm_service import generate as llm_generate, LLMError
 from backend.prompts.templates import RAG_ANSWER_SYSTEM, RAG_ANSWER_PROMPT, format_evidence_block
 
 if TYPE_CHECKING:
@@ -60,7 +60,7 @@ _INTENTS = {
 }
 
 _CAP_KW = {
-    "icu":["icu","intensive care"],"emergency_services":["emergency","er "],
+    "icu":["icu","intensive care"],"emergency_services":["emergency"," er "],
     "surgery":["surgery","surgical"],"maternity":["maternity","obstetric"],
     "pediatrics":["pediatric","children"],"cardiac_care":["cardiac","heart"],
     "oncology":["cancer","oncol"],"mental_health":["mental health","psych"],
@@ -105,12 +105,15 @@ def query_planner_agent(state: AgentState) -> Dict[str, Any]:
 
     city_filter = state.city_filter
     m = re.search(r"\bin\s+([A-Z][a-z]+(?: [A-Z][a-z]+)*)", state.query)
-    if m:
+    # "in California" names a state, not a city — a city filter on it matches
+    # nothing and silently drops retrieval to an unranked state listing.
+    if m and m.group(1).lower() not in _STATE_NAMES:
         city_filter = m.group(1)
 
     cap_filter = state.cap_filter
+    padded = f" {re.sub(r'[^a-z0-9]+', ' ', q)} "  # so " er " can't match inside "offer "
     for cap, kws in _CAP_KW.items():
-        if any(kw in q for kw in kws):
+        if any(kw in padded for kw in kws):
             cap_filter = cap; break
 
     step = ReasoningStep("query_planner", f"Analysed: '{state.query}'", [],
@@ -231,8 +234,8 @@ def _llm_answer(state: AgentState, retrieved_documents: List[Dict]) -> Optional[
                                        facts_block="\n".join(f"- {f}" for f in facts))
     try:
         return llm_generate(prompt, system=RAG_ANSWER_SYSTEM)
-    except LLMNotConfiguredError as e:
-        log.info(f"LLM not configured, using template answer: {e}")
+    except LLMError as e:
+        log.warning(f"LLM unavailable, using template answer: {e}")
         return None
 
 

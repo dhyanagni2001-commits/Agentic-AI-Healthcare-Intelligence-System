@@ -1,0 +1,8 @@
+# kind create cluster --name healthiq --config deploy/kind-config.yaml
+# Run from the repo root: hostPath is relative to the current directory.
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+    extraMounts:
+      - {hostPath: ./data, containerPath: /healthiq-data}

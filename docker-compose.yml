@@ -1,0 +1,40 @@
+# Local paths:
+#   docker compose up api                       # CPU only, no LLM (deterministic answers)
+#   LLM_PROVIDER=gemini GEMINI_API_KEY=... docker compose up api
+#   LLM_PROVIDER=vllm VLLM_BASE_URL=http://mock-llm:8000/v1 VLLM_MODEL=mock-model \
+#     docker compose --profile mock up          # CPU, streaming via a stub OpenAI server (no model)
+#   LLM_PROVIDER=vllm docker compose --profile gpu up   # vLLM on an NVIDIA GPU (needs nvidia-container-toolkit)
+services:
+  api:
+    build: .
+    image: healthiq-api:dev
+    ports: ["8000:8000"]
+    volumes: ["./data:/app/data"]
+    environment:
+      LLM_PROVIDER: ${LLM_PROVIDER:-none}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      VLLM_BASE_URL: ${VLLM_BASE_URL:-http://vllm:8000/v1}
+      VLLM_MODEL: ${VLLM_MODEL:-Qwen/Qwen2.5-1.5B-Instruct}
+      LLM_TIMEOUT_S: ${LLM_TIMEOUT_S:-30}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://localhost:8000/ready', timeout=3)"]
+      interval: 10s
+      start_period: 600s
+
+  mock-llm:
+    profiles: [mock]
+    image: healthiq-api:dev
+    command: ["python", "-m", "benchmarks.mock_openai_server", "--host", "0.0.0.0", "--port", "8000",
+              "--tokens", "64", "--token-delay-ms", "10"]
+
+  vllm:
+    profiles: [gpu]
+    image: vllm/vllm-openai:v0.10.1
+    command: ["--model", "${VLLM_MODEL:-Qwen/Qwen2.5-1.5B-Instruct}", "--max-model-len", "4096"]
+    ports: ["8001:8000"]
+    ipc: host
+    volumes: ["~/.cache/huggingface:/root/.cache/huggingface"]
+    deploy:
+      resources:
+        reservations:
+          devices: [{driver: nvidia, count: 1, capabilities: [gpu]}]

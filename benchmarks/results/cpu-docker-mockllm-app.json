@@ -1,0 +1,185 @@
+{
+  "label": "cpu-docker-mockllm-app",
+  "timestamp_utc": "2026-10-08T00:50:16Z",
+  "git_commit": "fb75030",
+  "target": "app",
+  "url": "http://localhost:8000",
+  "model": {
+    "model": "mock-model",
+    "app_llm": {
+      "provider": "vllm",
+      "model": "mock-model",
+      "configured": true
+    },
+    "hospitals_loaded": 5335
+  },
+  "hardware": {
+    "client_platform": "macOS-27.0.1-arm64-arm-64bit",
+    "client_machine": "arm64",
+    "client_cpu_count": 15,
+    "python": "3.11.16",
+    "client_cpu": "Apple M5 Pro",
+    "client_mem_gb": 24.0,
+    "local_nvidia_smi": null,
+    "server_hardware_note": "Docker Desktop linux/arm64 VM on Apple M5 Pro: 6 vCPU, 9.7 GiB; API CPU-only; LLM = mock server (64 tokens @10ms), NOT a model"
+  },
+  "workload": {
+    "file": "benchmarks/workloads/healthcare_queries.jsonl",
+    "sha256": "834b5968b9727a9e",
+    "num_prompts": 24,
+    "max_tokens": 128,
+    "max_results": 10,
+    "temperature": 0.0,
+    "warmup": 2,
+    "num_requests_per_level": 48
+  },
+  "levels": [
+    {
+      "concurrency": 1,
+      "num_requests": 48,
+      "succeeded": 48,
+      "error_rate": 0.0,
+      "errors": {},
+      "wall_time_s": 35.536,
+      "request_throughput_rps": 1.351,
+      "output_token_throughput_tps": 86.45,
+      "output_tokens_total": 3072,
+      "token_count_source": [
+        "chunks"
+      ],
+      "ttft_ms": {
+        "n": 48,
+        "mean": 38.32,
+        "p50": 38.55,
+        "p90": 45.69,
+        "p99": 46.96
+      },
+      "itl_ms": {
+        "n": 3024,
+        "mean": 11.13,
+        "p50": 10.87,
+        "p90": 12.54,
+        "p99": 13.27
+      },
+      "tpot_ms": {
+        "n": 48,
+        "mean": 11.14,
+        "p50": 11.16,
+        "p90": 11.37,
+        "p99": 11.44
+      },
+      "e2e_ms": {
+        "n": 48,
+        "mean": 740.3,
+        "p50": 741.76,
+        "p90": 755.73,
+        "p99": 761.39
+      },
+      "server_retrieval_ms": {
+        "n": 48,
+        "mean": 23.78,
+        "p50": 23.32,
+        "p90": 30.18,
+        "p99": 31.84
+      }
+    },
+    {
+      "concurrency": 4,
+      "num_requests": 48,
+      "succeeded": 48,
+      "error_rate": 0.0,
+      "errors": {},
+      "wall_time_s": 8.823,
+      "request_throughput_rps": 5.44,
+      "output_token_throughput_tps": 348.17,
+      "output_tokens_total": 3072,
+      "token_count_source": [
+        "chunks"
+      ],
+      "ttft_ms": {
+        "n": 48,
+        "mean": 51.65,
+        "p50": 51.57,
+        "p90": 55.79,
+        "p99": 60.94
+      },
+      "itl_ms": {
+        "n": 3024,
+        "mean": 10.8,
+        "p50": 10.67,
+        "p90": 12.07,
+        "p99": 13.13
+      },
+      "tpot_ms": {
+        "n": 48,
+        "mean": 10.85,
+        "p50": 10.84,
+        "p90": 10.96,
+        "p99": 11.01
+      },
+      "e2e_ms": {
+        "n": 48,
+        "mean": 735.0,
+        "p50": 733.56,
+        "p90": 745.5,
+        "p99": 747.49
+      },
+      "server_retrieval_ms": {
+        "n": 48,
+        "mean": 33.39,
+        "p50": 33.56,
+        "p90": 36.48,
+        "p99": 39.0
+      }
+    },
+    {
+      "concurrency": 16,
+      "num_requests": 48,
+      "succeeded": 48,
+      "error_rate": 0.0,
+      "errors": {},
+      "wall_time_s": 2.519,
+      "request_throughput_rps": 19.052,
+      "output_token_throughput_tps": 1219.3,
+      "output_tokens_total": 3072,
+      "token_count_source": [
+        "chunks"
+      ],
+      "ttft_ms": {
+        "n": 48,
+        "mean": 144.31,
+        "p50": 162.55,
+        "p90": 190.29,
+        "p99": 202.57
+      },
+      "itl_ms": {
+        "n": 3024,
+        "mean": 10.62,
+        "p50": 10.5,
+        "p90": 12.21,
+        "p99": 14.41
+      },
+      "tpot_ms": {
+        "n": 48,
+        "mean": 10.68,
+        "p50": 10.7,
+        "p90": 10.8,
+        "p99": 10.85
+      },
+      "e2e_ms": {
+        "n": 48,
+        "mean": 817.39,
+        "p50": 836.62,
+        "p90": 860.49,
+        "p99": 876.19
+      },
+      "server_retrieval_ms": {
+        "n": 48,
+        "mean": 112.98,
+        "p50": 113.77,
+        "p90": 165.51,
+        "p99": 177.63
+      }
+    }
+  ]
+}

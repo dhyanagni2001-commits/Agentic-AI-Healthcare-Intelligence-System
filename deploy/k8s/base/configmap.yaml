@@ -1,0 +1,12 @@
+# Non-secret runtime config. API keys (GEMINI_API_KEY, VLLM_API_KEY) belong in a
+# Secret named healthiq-secrets, e.g.:
+#   kubectl -n healthiq create secret generic healthiq-secrets --from-literal=GEMINI_API_KEY=...
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: healthiq-config
+data:
+  LLM_PROVIDER: "none"        # CPU base: deterministic answers, no LLM. gpu overlay sets "vllm".
+  LLM_TIMEOUT_S: "30"
+  LLM_MAX_RETRIES: "1"
+  LLM_MAX_TOKENS: "512"

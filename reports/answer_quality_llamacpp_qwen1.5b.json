@@ -1,0 +1,374 @@
+{
+  "llm": {
+    "provider": "vllm",
+    "model": "qwen2.5-1.5b-instruct-q4_k_m",
+    "configured": true
+  },
+  "temperature": "0",
+  "status": "scored",
+  "summary": {
+    "n_queries": 30,
+    "fallback_rate": 0.0,
+    "unsupported_citation_rate": 0.0,
+    "out_of_state_citation_rate": 0.035,
+    "unsupported_number_rate": 0.029,
+    "total_citations": 198,
+    "total_numbers": 279,
+    "answers_with_any_issue": 7
+  },
+  "rows": [
+    {
+      "id": "field-canon-0",
+      "query": "Find pediatric hospitals in Virginia",
+      "fallback": false,
+      "cited": 9,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 9,
+      "unsupported_numbers": [],
+      "answer": "Pediatric hospitals in Virginia include:\n- Virginia Community Hospital: 10 doctors assigned\n- Virginia Healthcare: 12 doctors assigned\n- Virginia Regional Hospital: 6 doctors assigned\n- Virginia County Hospital: 2 doctors assigned\n- Virginia Hospital: 5 doctors assigned\n- Virginia Veterans Hospital: 17 doctors assigned\n- Virginia City Hospital: 5 doctors assigned\n- Virginia Health Center: 16 doctors assigned\n- Virginia Medical Center: 3 doctors assigned\n\nThese hospitals provide pediatric care and have varying numbers of doctors assigned to their pediatrics departments."
+    },
+    {
+      "id": "field-canon-1",
+      "query": "Find maternity hospitals in Pennsylvania",
+      "fallback": false,
+      "cited": 4,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 9,
+      "unsupported_numbers": [],
+      "answer": "Maternity hospitals in Pennsylvania include:\n- Children's Hospital of Philadelphia (Emergency Services: No, Capabilities: Maternity, Pediatrics)\n- Pennsylvania Memorial Hospital (Emergency Services: Yes, Capabilities: Emergency Services, ICU, Maternity, Pediatrics)\n- Pennsylvania County Hospital (Neonatology: 1 Physician, Capabilities: Maternity, Pediatrics)\n- Pennsylvania Community Hospital (Obstetrics & Gynecology: 2 Physicians, Capabilities: Maternity, Pediatrics)\n- Pennsylvania Medical Center (Obstetrics & Gynecology: 2 Physicians, Capabilities: Maternity, Pediatrics, Emergency Services)\n- Pennsylvania County Hospital (Neonatology: 15 Physicians, Capabilities: Maternity, Pediatrics)\n- Pennsylvania Memorial Hospital (Obstetrics & Gynecology: 2 Physicians, Capabilities: Maternity, Pediatrics)\n- Pennsylvania County Hospital (Neonatology: 15 Physicians, Capabilities: Maternity, Pediatrics)\n- Pennsylvania Memorial Hospital (Obstetrics & Gynecology: 2 Physicians, Capabilities: Maternity, Pediatrics)\n- Pennsylvania County Hospital (Neonatology: 15 Physicians, Capabilities: Maternity, Pediatrics)\n- Pennsylvania Memorial Hospital (Obstetrics & Gynecology: 2 Physicians, Capabilities: Maternity, Pediatrics)"
+    },
+    {
+      "id": "field-canon-2",
+      "query": "Find cardiac care hospitals in Ohio",
+      "fallback": false,
+      "cited": 8,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 21,
+      "unsupported_numbers": [],
+      "answer": "Based on the evidence provided, the top cardiac care hospitals in Ohio are:\n\n1. Ohio Medical Center in Cleveland, Ohio, which offers cardiac care services and has 2 doctors assigned to the cardiology department.\n2. Ohio Memorial Hospital in Columbus, Ohio, which has 10 doctors assigned to the cardiology department.\n3. Ohio Healthcare in Cincinnati, Ohio, which has 13 doctors assigned to the cardiology department.\n4. Ohio Regional Medical Center in Columbus, Ohio, which has 2 doctors assigned to the cardiology department.\n5. Ohio County Hospital in Columbus, Ohio, which has 18 doctors assigned to the cardiology department.\n6. Ohio Health Center in Cincinnati, Ohio, which has 12 doctors assigned to the cardiology department.\n7. Ohio Regional Hospital in Columbus, Ohio, which has 10 doctors assigned to the cardiology department.\n8. Ohio City Hospital in Cleveland, Ohio, which has 7 doctors assigned to the cardiology department.\n9. Ohio Healthcare in Cincinnati, Ohio, which has 13 doctors assigned to the cardiology department.\n10. Ohio Medical Center in Cleveland, Ohio, which has 2 doctors assigned to the cardiology department.\n\nThese hospitals provide a range of cardiac care services, including emergency services, ICU, surgery, rehabilitation, and mental health. The average number of doctors assigned to the cardiology department across these hospitals is 355.8."
+    },
+    {
+      "id": "field-canon-3",
+      "query": "Show facilities with oncology services in Georgia",
+      "fallback": false,
+      "cited": 10,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 12,
+      "unsupported_numbers": [
+        "100"
+      ],
+      "answer": "The hospitals in Georgia that offer oncology services include:\n\n- Georgia Community Hospital: 12 doctors assigned\n- Georgia Healthcare: 4 doctors assigned\n- Georgia Regional Hospital: 8 doctors assigned\n- Georgia Hospital: 10 doctors assigned\n- Georgia Health Center: 7 doctors assigned\n- Georgia Health System: 19 doctors assigned\n- Georgia Medical Center: 6 doctors assigned\n- Georgia Clinic: 23 doctors assigned\n- Georgia Memorial Hospital: 7 doctors assigned\n- Georgia County Hospital: 17 doctors assigned\n\nThese hospitals collectively have a total of 100 doctors assigned to the oncology department, which is approximately 352.7 doctors per hospital on average."
+    },
+    {
+      "id": "field-canon-4",
+      "query": "Which hospitals in Ohio offer mental health?",
+      "fallback": false,
+      "cited": 5,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 0,
+      "unsupported_numbers": [],
+      "answer": "Ohio offers several hospitals that provide mental health services. Among the hospitals listed, the Ohio Medical Center in Parma, Ohio, and the Ohio Health Center in Toledo, Ohio, both have psychiatric hospitals and emergency services. Additionally, the Ohio Regional Hospital, Ohio Healthcare, and Ohio Memorial Hospital all have psychiatry departments with varying numbers of doctors assigned. The psychiatry departments at these hospitals have capabilities such as emergency services and ICU, indicating comprehensive mental health services."
+    },
+    {
+      "id": "field-canon-5",
+      "query": "Which hospitals in Arkansas offer emergency?",
+      "fallback": false,
+      "cited": 6,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 3,
+      "unsupported_numbers": [],
+      "answer": "Arkansas offers several hospitals that provide emergency services. Among the hospitals listed, 7 out of 10 have emergency services, indicating a high availability of emergency care in the state. The emergency medicine departments at these hospitals have an average of 171.3 doctors assigned, suggesting a robust medical staff to handle emergency situations. The hospitals with emergency services include Arkansas Memorial Hospital, Arkansas Regional Hospital, Arkansas Healthcare, Arkansas General Hospital, Arkansas Clinic, Arkansas Regional Medical Center, and Arkansas Clinic Pine Bluff. These facilities provide a range of capabilities including emergency services, intensive care units (ICUs), surgery, and other specialized services. While some hospitals have a lower overall rating, the presence of emergency services and ICU capabilities indicates that these hospitals are capable of providing critical medical care."
+    },
+    {
+      "id": "field-canon-6",
+      "query": "Show facilities with intensive care services in Missouri",
+      "fallback": false,
+      "cited": 7,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 8,
+      "unsupported_numbers": [],
+      "answer": "Hospitals with intensive care services in Missouri include:\n\n1. Missouri Regional Medical Center - St. Louis MO: Provides emergency services, ICU, surgery.\n2. Missouri Medical Center - O'Fallon MO: Provides emergency services, ICU, surgery, trauma center.\n3. Missouri Regional Hospital - Lee's Summit MO: Provides emergency services, ICU.\n4. Missouri Clinic - St. Louis MO: Provides emergency services, ICU, surgery, trauma center.\n5. Missouri Children's Hospital - Kansas City MO: Provides ICU, surgery.\n6. Missouri Regional Hospital - Columbia MO: Provides emergency services, ICU, surgery, maternity, pediatrics, rehabilitation, mental health, cardiac care, oncology, trauma center.\n7. Missouri Health Center - Columbia MO: Provides emergency services, ICU, surgery, maternity, pediatrics, rehabilitation, mental health, cardiac care, oncology, trauma center.\n8. Missouri Hospital - Kansas City MO: Provides emergency services, ICU, surgery, maternity, pediatrics, rehabilitation, mental health, cardiac care, oncology, trauma center.\n\nThese hospitals collectively offer a wide range of ICU services, including emergency services, surgery, and trauma care."
+    },
+    {
+      "id": "field-canon-7",
+      "query": "Show facilities with rehab services in Michigan",
+      "fallback": false,
+      "cited": 6,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 19,
+      "unsupported_numbers": [],
+      "answer": "Hospitals with rehabilitation services in Michigan include Michigan Community Hospital, Michigan Children's Hospital, Michigan Veterans Hospital, Michigan Clinic, Michigan Healthcare, Michigan Memorial Hospital, and Michigan Veterans Hospital. Michigan Community Hospital and Michigan Children's Hospital are rated 4/5 and 5/5, respectively, indicating high quality of care. Michigan Veterans Hospital, Michigan Clinic, Michigan Healthcare, Michigan Memorial Hospital, and Michigan Veterans Hospital are rated 4/5, 5/5, 4/5, 4/5, and 4/5, respectively, also indicating high quality of care. The physical medicine & rehabilitation department at Michigan Clinic, Michigan Veterans Hospital, Michigan Healthcare, Michigan Memorial Hospital, and Michigan Veterans Hospital has 11, 4, 2, 4, and 3 doctors assigned, respectively."
+    },
+    {
+      "id": "field-canon-8",
+      "query": "Which hospitals in Tennessee offer surgical?",
+      "fallback": false,
+      "cited": 8,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 8,
+      "unsupported_numbers": [],
+      "answer": "Tennessee offers several hospitals that provide surgical services. Among the hospitals listed, the Tennessee University Hospital, Tennessee Medical Center, Tennessee Regional Medical Center, and Tennessee Regional Hospital all have surgery departments with 14, 14, 14, and 8 doctors assigned, respectively. Additionally, the Tennessee Healthcare, Tennessee Clinic, Tennessee Memorial Hospital, and Tennessee Health Center have surgery departments with 6, 8, 9, and 25 doctors assigned, respectively. These hospitals collectively provide surgical services to patients in Tennessee."
+    },
+    {
+      "id": "field-canon-9",
+      "query": "Find pediatric hospitals in Michigan",
+      "fallback": false,
+      "cited": 7,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 4,
+      "unsupported_numbers": [],
+      "answer": "Pediatric hospitals in Michigan include Michigan City Hospital, Michigan County Hospital, Michigan Regional Hospital, Michigan Community Hospital, Michigan Children's Hospital, Michigan Regional Medical Center, and Michigan Healthcare. These hospitals have varying numbers of doctors assigned to their pediatrics departments, ranging from 1 to 21 doctors. Michigan Children's Hospital stands out with 21 doctors assigned, making it one of the largest pediatric hospitals in the state. All the hospitals listed have emergency services and an ICU, indicating comprehensive healthcare facilities. On average, the number of doctors assigned to the pediatrics departments across these hospitals is 236.8."
+    },
+    {
+      "id": "field-canon-10",
+      "query": "Find maternity hospitals in Missouri",
+      "fallback": false,
+      "cited": 7,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 10,
+      "unsupported_numbers": [],
+      "answer": "Maternity hospitals in Missouri include:\n- Missouri City Hospital: 7 doctors assigned in obstetrics & gynecology\n- Missouri Community Hospital: 7 doctors assigned in obstetrics & gynecology\n- Missouri City Hospital: 6 doctors assigned in neonatology\n- Missouri Medical Center | Blue Springs MO: 0 doctors across 0 departments\n- Missouri Regional Medical Center: 1 physician in neonatology\n- Missouri City Hospital: 2 doctors assigned in obstetrics & gynecology\n- Missouri Hospital: 1 doctor assigned in obstetrics & gynecology\n- Missouri Healthcare: 1 doctor assigned in obstetrics & gynecology\n- Missouri Health Center: 1 doctor assigned in obstetrics & gynecology"
+    },
+    {
+      "id": "field-canon-11",
+      "query": "Which hospitals in Arkansas offer cardiac care?",
+      "fallback": false,
+      "cited": 9,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 1,
+      "unsupported_numbers": [],
+      "answer": "Arkansas offers several hospitals that provide cardiac care. Among the top-ranked hospitals, Arkansas Memorial Hospital, Arkansas City Hospital, Arkansas Hospital, Arkansas Healthcare, Arkansas General Hospital, Arkansas Regional Hospital, Arkansas County Hospital, Arkansas Medical Center, and Arkansas Health Center all have cardiology departments with assigned doctors. These hospitals collectively have 70 doctors assigned to the cardiology department, indicating a strong focus on cardiac care. While not all hospitals have emergency services or an ICU, the majority of the hospitals listed do, suggesting comprehensive cardiac care services."
+    },
+    {
+      "id": "field-canon-12",
+      "query": "Show facilities with oncology services in Texas",
+      "fallback": false,
+      "cited": 6,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 7,
+      "unsupported_numbers": [],
+      "answer": "In Texas, the hospitals with oncology services include:\n\n- Texas Medical Center: 38 doctors assigned\n- Texas Regional Medical Center: 21 doctors assigned\n- Texas University Hospital: 29 doctors assigned\n- Texas Regional Hospital: 51 doctors assigned\n- Texas Community Hospital: 39 doctors assigned\n- Texas City Hospital: 35 doctors assigned\n\nThese facilities provide oncology services, with an average of 975.4 doctors assigned per hospital. The hospitals with oncology services include Texas Medical Center, Texas Regional Medical Center, Texas University Hospital, Texas Regional Hospital, Texas Community Hospital, and Texas City Hospital."
+    },
+    {
+      "id": "field-canon-13",
+      "query": "Find mental health hospitals in South Carolina",
+      "fallback": false,
+      "cited": 8,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 26,
+      "unsupported_numbers": [],
+      "answer": "In South Carolina, there are several mental health hospitals that offer psychiatric services. Some notable options include:\n\n1. **Sumter SC Psychiatric Hospital**: This hospital is located in Sumter, SC, and provides emergency services. It has capabilities in mental health but lacks doctors across departments. The hospital has an overall rating of 3/5.\n\n2. **Greenville SC Psychiatric Hospital**: Situated in Greenville, SC, this hospital offers emergency services and mental health capabilities. It has 0 doctors across departments and 0 departments. The hospital has an overall rating of 5/5.\n\n3. **South Carolina Healthcare Psychiatry Department**: This department has 10 doctors assigned, indicating a strong focus on mental health services.\n\n4. **South Carolina Community Hospital Psychiatry Department**: With 5 doctors assigned, this department also emphasizes mental health services.\n\n5. **South Carolina Health System Psychiatry Department**: This department has 13 doctors assigned, providing comprehensive mental health services.\n\n6. **South Carolina Veterans Hospital in Goose Creek SC**: Located in Goose Creek, SC, this hospital offers emergency services and mental health capabilities. It has 0 doctors across departments and 0 departments. The hospital has an overall rating of 3.\n\n7. **South Carolina County Hospital Psychiatry Department**: With 5 doctors assigned, this department focuses on mental health services.\n\n8. **South Carolina Memorial Hospital Psychiatry Department**: This department has 4 doctors assigned, indicating a dedicated focus on mental health.\n\n9. **South Carolina City Hospital Psychiatry Department**: With 8 doctors assigned, this department provides mental health services.\n\n10. **South Carolina Regional Hospital Psychiatry Department**: This department has 7 doctors assigned, offering mental health services and emergency services.\n\nThese hospitals collectively provide a range of mental health services, from emergency services to comprehensive psychiatric care."
+    },
+    {
+      "id": "field-canon-14",
+      "query": "Which hospitals in New York offer emergency?",
+      "fallback": false,
+      "cited": 8,
+      "unsupported_citations": [],
+      "out_of_state_citations": [
+        "Manhattan Healthcare",
+        "York Healthcare"
+      ],
+      "numbers": 18,
+      "unsupported_numbers": [],
+      "answer": "New York offers several hospitals that provide emergency services. Among the hospitals with emergency services, the average number of doctors assigned is 277.0. Here are some hospitals that offer emergency services:\n\n1. **New York Regional Hospital** - This hospital has 12 doctors assigned to the emergency medicine department.\n2. **New York University Hospital** - With 10 doctors assigned, this hospital also provides emergency services.\n3. **New York Community Hospital** - Having 12 doctors assigned, this hospital offers emergency services.\n4. **New York City Hospital** - This critical access hospital has 17 doctors assigned to the emergency medicine department.\n5. **New York Hospital (New York City)** - This critical access hospital offers emergency services, including ICU, surgery, maternity, pediatrics, rehabilitation, mental health, cardiac care, oncology, and trauma.\n6. **Manhattan Healthcare** - This hospital has 1 doctor assigned to the emergency medicine department.\n7. **York Healthcare** - With 8 doctors assigned, this hospital provides emergency services.\n8. **New York Hospital** - This hospital has 9 doctors assigned to the emergency medicine department.\n9. **New York Clinic** - This critical access hospital has 13 doctors assigned to the emergency medicine department.\n\nThese hospitals collectively provide a wide range of emergency services, including emergency medicine, ICU, surgery, and other specialized services."
+    },
+    {
+      "id": "field-canon-15",
+      "query": "Which hospitals in New York offer intensive care?",
+      "fallback": false,
+      "cited": 5,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 11,
+      "unsupported_numbers": [],
+      "answer": "The hospitals in New York that offer intensive care (ICU) services are:\n\n1. New York University Hospital - Yonkers NY\n2. New York Memorial Hospital - Schenectady NY\n3. New York Regional Medical Center - New York City NY\n4. New York City Hospital - Buffalo NY\n5. New York Medical Center - Buffalo NY\n6. New York University Hospital - Yonkers NY\n7. New York Memorial Hospital - Schenectady NY\n8. New York Regional Medical Center - New York City NY\n9. New York City Hospital - Buffalo NY\n10. New York Medical Center - Buffalo NY\n\nThese hospitals have ICU services and emergency services. The average number of doctors across the hospitals is 41.1."
+    },
+    {
+      "id": "field-canon-16",
+      "query": "Which hospitals in Illinois offer rehab?",
+      "fallback": false,
+      "cited": 5,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 4,
+      "unsupported_numbers": [],
+      "answer": "Illinois offers several hospitals that provide rehabilitation services. The top-ranked hospital, Illinois Community Hospital in Chicago, IL, is a rehabilitation hospital with emergency services and capabilities in ICU, rehabilitation, and mental health. It has 0 doctors across 0 departments and an overall rating of 5/5. Other hospitals like Illinois Health Center in Champaign, Illinois, and Illinois Regional Hospital in Joliet, Illinois, also provide rehabilitation services with emergency services and capabilities in ICU, rehabilitation, and mental health. The Illinois Regional Medical Center in Champaign, Illinois, is another option with emergency services, ICU, surgery, maternity, pediatrics, rehabilitation, mental health, cardiac care, oncology, and t capabilities. Additionally, the Illinois Regional Hospital in Chicago, Illinois, offers emergency services, ICU, surgery, maternity, pediatrics, rehabilitation, mental health, cardiac care, oncology, and t capabilities. The Illinois Medical Center in Naperville, Illinois, also provides rehabilitation services with emergency services and capabilities in ICU, rehabilitation, and mental health. Lastly, the Illinois Regional Medical Center in Naperville, Illinois, offers emergency services, ICU, surgery, maternity, pediatrics, rehabilitation, mental health, cardiac care, oncology, and t capabilities."
+    },
+    {
+      "id": "field-canon-17",
+      "query": "Which hospitals in California offer surgical?",
+      "fallback": false,
+      "cited": 8,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 18,
+      "unsupported_numbers": [
+        "128",
+        "218"
+      ],
+      "answer": "The hospitals in California that offer surgical services are as follows:\n\n1. California University Hospital: 21 doctors assigned\n2. California City Hospital: 28 doctors assigned\n3. California Community Hospital: 15 doctors assigned\n4. California Healthcare: 12 doctors assigned\n5. California County Hospital: 25 doctors assigned\n6. California General Hospital: 29 doctors assigned\n7. California Regional Medical Center: 25 doctors assigned\n8. California Medical Center: 26 doctors assigned\n\nThese hospitals collectively have 128 doctors assigned to their surgery departments, providing a total of 218 doctors across all hospitals."
+    },
+    {
+      "id": "field-canon-18",
+      "query": "Which hospitals in Nebraska offer pediatric?",
+      "fallback": false,
+      "cited": 6,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 6,
+      "unsupported_numbers": [],
+      "answer": "Nebraska offers several hospitals that provide pediatric services. Among the hospitals listed, Nebraska Children's Hospital, Nebraska Regional Hospital, Nebraska Community Hospital, Nebraska University Hospital, Nebraska City Hospital, and Nebraska County Hospital all have a pediatrics department with assigned doctors. The number of doctors assigned varies, ranging from 2 to 30, indicating a range in the quality and availability of pediatric care. Additionally, some hospitals have multiple pediatric departments, such as Nebraska Children's Hospital and Nebraska University Hospital, which have 1 and 2 physicians respectively, but both have 11 and 30 doctors assigned, respectively. This suggests that while some hospitals may have fewer pediatric doctors, others have a higher number, indicating a diverse range of pediatric services across the state."
+    },
+    {
+      "id": "field-canon-19",
+      "query": "Which hospitals in Mississippi offer maternity?",
+      "fallback": false,
+      "cited": 5,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 3,
+      "unsupported_numbers": [],
+      "answer": "Mississippi offers several hospitals that provide maternity services. Among the hospitals listed, Mississippi Community Hospital, Mississippi City Hospital, Mississippi Children's Hospital, Mississippi University Hospital, Mississippi Regional Hospital, and Mississippi City Hospital all offer obstetrics and gynecology services. Additionally, Mississippi Children's Hospital and Mississippi University Hospital have neonatology services as well. These hospitals have varying numbers of doctors assigned to their obstetrics and gynecology departments, ranging from 2 to 4 doctors. The average number of doctors across the hospitals is 179.1."
+    },
+    {
+      "id": "field-canon-20",
+      "query": "Which hospitals in Massachusetts offer cardiac care?",
+      "fallback": false,
+      "cited": 8,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 9,
+      "unsupported_numbers": [],
+      "answer": "The hospitals in Massachusetts that offer cardiac care include:\n\n1. Massachusetts Memorial Hospital\n2. Massachusetts Community Hospital\n3. Massachusetts City Hospital\n4. Massachusetts Hospital\n5. Massachusetts Health Center\n6. Massachusetts Regional Hospital\n7. Massachusetts County Hospital\n8. Massachusetts Medical Center\n\nThese hospitals have an average of 220.8 doctors assigned to their cardiology departments, indicating a robust cardiac care infrastructure."
+    },
+    {
+      "id": "field-canon-21",
+      "query": "Show facilities with oncology services in Kentucky",
+      "fallback": false,
+      "cited": 5,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 6,
+      "unsupported_numbers": [
+        "44"
+      ],
+      "answer": "In Kentucky, there are several hospitals that offer oncology services. The top facilities with oncology services include:\n\n- Kentucky Medical Center: 6 doctors assigned\n- Kentucky Regional Hospital: 22 doctors assigned\n- Kentucky Regional Medical Center: 5 doctors assigned\n- Kentucky Clinic: 5 doctors assigned\n- Kentucky City Hospital: 3 doctors assigned\n\nThese hospitals collectively have 44 doctors assigned to their oncology departments, indicating a strong focus on oncology services in Kentucky."
+    },
+    {
+      "id": "field-canon-22",
+      "query": "Which hospitals in New York offer mental health?",
+      "fallback": false,
+      "cited": 6,
+      "unsupported_citations": [],
+      "out_of_state_citations": [
+        "Manhattan Healthcare",
+        "York Healthcare"
+      ],
+      "numbers": 4,
+      "unsupported_numbers": [],
+      "answer": "New York offers several hospitals that provide mental health services. Among the top-ranked hospitals, Manhattan Healthcare and York Healthcare both have psychiatry departments with 8 doctors assigned each. New York Community Hospital and New York Regional Hospital both have psychiatry departments with 8 doctors assigned as well. Additionally, New York Medical Center and New York City Healthcare both have psychiatry departments with 4 and 2 doctors assigned, respectively. These hospitals provide emergency services and mental health capabilities, though some have lower overall ratings."
+    },
+    {
+      "id": "field-canon-23",
+      "query": "Which hospitals in Mississippi offer emergency?",
+      "fallback": false,
+      "cited": 5,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 2,
+      "unsupported_numbers": [],
+      "answer": "The hospitals in Mississippi that offer emergency services are:\n- Mississippi Regional Hospital in Olive Branch, MS\n- Mississippi City Hospital in Meridian, MS\n- Mississippi Memorial Hospital in Tupelo, MS\n- Mississippi Healthcare in Tupelo, MS\n- Mississippi Clinic in Meridian, MS\nThese hospitals have emergency medicine departments with varying numbers of doctors assigned, ranging from 5 to 19. All of them have emergency services, ICU, and other specialized services like surgery, rehabilitation, and mental health."
+    },
+    {
+      "id": "field-para-0",
+      "query": "Find kids and infants hospitals in Nebraska",
+      "fallback": false,
+      "cited": 3,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 4,
+      "unsupported_numbers": [],
+      "answer": "Nebraska has two hospitals that specialize in children and infants: Nebraska Regional Hospital in Lincoln and Nebraska Children's Hospital. Both hospitals offer emergency services, intensive care units (ICUs), and maternity services. The Nebraska Children's Hospital has departments such as neonatology, pediatrics, and family medicine, with 12 doctors assigned to the pediatrics department alone. The Nebraska County Hospital also has a pediatrics department with 12 doctors assigned. The emergency medicine department at the Nebraska Children's Hospital has 5 doctors assigned. The neonatology department at both hospitals has 8 doctors assigned."
+    },
+    {
+      "id": "field-para-1",
+      "query": "Show facilities with labor and delivery services in Nebraska",
+      "fallback": false,
+      "cited": 5,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 2,
+      "unsupported_numbers": [],
+      "answer": "The hospitals in Nebraska that offer labor and delivery services are:\n- Nebraska Regional Hospital in Lincoln, NE\n- Nebraska Healthcare in Lincoln, NE\n- Nebraska Healthcare in Papillion, NE\n- Nebraska Medical Center in Columbus, NE\n- Nebraska Healthcare in Hastings, NE\n- Nebraska University Hospital in Lincoln, NE\n- Nebraska Community Hospital in Hastings, NE\n\nThese hospitals provide a range of services including emergency services, ICUs, and maternity care. The overall rating for these facilities is 5/5, indicating high quality and comprehensive services."
+    },
+    {
+      "id": "field-para-2",
+      "query": "Which hospitals in Maryland offer coronary disease?",
+      "fallback": false,
+      "cited": 8,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 21,
+      "unsupported_numbers": [
+        "68"
+      ],
+      "answer": "The hospitals in Maryland that offer coronary disease services include:\n\n1. Maryland University Hospital: 14 doctors assigned\n2. Maryland Regional Medical Center: 4 doctors assigned\n3. Maryland County Hospital: 3 doctors assigned\n4. Maryland Memorial Hospital: 14 doctors assigned\n5. Maryland General Hospital: 16 doctors assigned\n6. Maryland Healthcare: 2 doctors assigned\n7. Maryland Regional Hospital: 2 doctors assigned\n8. Maryland City Hospital: 3 doctors assigned\n9. Maryland University Hospital: 14 doctors assigned\n10. Maryland Memorial Hospital: 14 doctors assigned\n\nThese hospitals collectively have 68 doctors assigned to the cardiology department, providing comprehensive coronary disease services."
+    },
+    {
+      "id": "field-para-3",
+      "query": "Show facilities with chemotherapy and tumor treatment services in Virginia",
+      "fallback": false,
+      "cited": 10,
+      "unsupported_citations": [],
+      "out_of_state_citations": [
+        "West Virginia Community Hospital",
+        "West Virginia Regional Hospital",
+        "West Virginia Regional Medical Center"
+      ],
+      "numbers": 15,
+      "unsupported_numbers": [
+        "45",
+        "45",
+        "21.5"
+      ],
+      "answer": "The hospitals in Virginia that offer chemotherapy and tumor treatment services include:\n\n- Virginia Regional Medical Center: 7 doctors assigned\n- Virginia Community Hospital: 18 doctors assigned\n- West Virginia Community Hospital: 11 doctors assigned\n- Virginia Clinic: 10 doctors assigned\n- Virginia Regional Hospital: 3 doctors assigned\n- Virginia Health Center: 8 doctors assigned\n- Virginia Healthcare: 8 doctors assigned\n- Virginia Memorial Hospital: 2 doctors assigned\n- West Virginia Regional Medical Center: 4 doctors assigned\n- West Virginia Regional Hospital: 1 doctor assigned\n\nThese hospitals collectively provide a total of 45 doctors assigned to the oncology department, which is 45/208 = 21.5% of the average doctor count across the 10 hospitals."
+    },
+    {
+      "id": "field-para-4",
+      "query": "Show facilities with behavioral health services in Minnesota",
+      "fallback": false,
+      "cited": 4,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 5,
+      "unsupported_numbers": [],
+      "answer": "There are several hospitals in Minnesota that offer behavioral health services, including psychiatric hospitals and rehabilitation hospitals. Some of the facilities with behavioral health services in Minnesota are:\n\n- Minnesota Community Hospital in St. Paul, MN, which is a psychiatric hospital with emergency services and capabilities in mental health.\n- Duluth Regional Medical Center in Duluth, MN, which is a psychiatric hospital with emergency services and capabilities in mental health.\n- Minneapolis Regional Medical Center in Minneapolis, MN, which is a psychiatric hospital with emergency services and capabilities in mental health.\n- Minnesota City Hospital in Brooklyn Park, MN, which is a rehabilitation hospital with emergency services and capabilities in rehabilitation.\n\nThese hospitals have varying levels of expertise and overall ratings, ranging from 4/5 to 3/5. While some hospitals have a higher number of doctors assigned to the psychiatry department, the average doctor count across the retrieved hospitals is 78.0."
+    },
+    {
+      "id": "field-para-5",
+      "query": "Which hospitals in Georgia offer urgent care around the clock?",
+      "fallback": false,
+      "cited": 7,
+      "unsupported_citations": [],
+      "out_of_state_citations": [],
+      "numbers": 14,
+      "unsupported_numbers": [],
+      "answer": "Georgia offers several hospitals that provide urgent care around the clock. Among the top contenders are:\n\n1. Georgia Memorial Hospital: This hospital has 11 doctors assigned to the emergency medicine department, offering 24/7 care.\n2. Georgia Regional Hospital: With 13 doctors assigned, this hospital also provides 24/7 emergency care.\n3. Georgia Health Center: This facility has 1 doctor assigned to the emergency medicine department, offering 24/7 care.\n4. Georgia Community Hospital: This hospital has 15 doctors assigned to the emergency medicine department, providing 24/7 care.\n5. Georgia Medical Center: This institution has 1 doctor assigned to the emergency medicine department, offering 24/7 care.\n6. Georgia Regional Medical Center: This hospital has 22 doctors assigned to the emergency medicine department, providing 24/7 care.\n7. Georgia University Hospital: This facility has 12 doctors assigned to the emergency medicine department, offering 24/7 care.\n\nThese hospitals collectively provide a significant amount of 24/7 emergency care services, making them suitable for urgent medical needs."
+    }
+  ]
+}

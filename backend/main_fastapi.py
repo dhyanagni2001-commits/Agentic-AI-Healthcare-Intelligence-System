@@ -15,6 +15,7 @@ import os
 # Must be set before torch or faiss load their OpenMP runtime (macOS libomp conflict)
 os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
 os.environ.setdefault("OMP_NUM_THREADS", "1")
+import json
 import logging
 import sys
 import time
@@ -25,6 +26,7 @@ from typing import Any, Dict, List, Optional
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse, StreamingResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from pydantic import BaseModel, Field
 
@@ -247,6 +249,16 @@ def health():
                            index_ready=_index is not None and _index.total > 0)
 
 
+@app.get("/ready")
+def ready():
+    """Readiness: 503 until the index is loaded. The LLM is reported but not
+    required — without it /query falls back to deterministic answers."""
+    from backend.services.llm_service import provider_info
+    index_ready = _index is not None and _index.total > 0
+    body = {"ready": index_ready, "hospitals_loaded": len(_hospitals), "llm": provider_info()}
+    return JSONResponse(body, status_code=200 if index_ready else 503)
+
+
 @app.get("/stats", response_model=StatsResponse)
 def stats():
     items = list(_hospitals.values())
@@ -370,3 +382,34 @@ def query(body: QueryRequest):
         include_reasoning=body.include_reasoning, max_results=min(50, max(1, body.max_results)),
     )
     return AgentResponseModel(**resp.to_dict())
+
+
+def _sse(event: str, data: Dict[str, Any]) -> str:
+    return f"event: {event}\ndata: {json.dumps(data, default=str)}\n\n"
+
+
+@app.post("/query/stream")
+def query_stream(body: QueryRequest):
+    """Server-sent events over the RAG pipeline: `sources` first, then
+    `token` chunks, then `done` (see rag_pipeline.stream_rag). LLM failures
+    degrade to an `error` event plus a computed-facts answer, never a 500
+    mid-stream."""
+    from backend.services.rag_pipeline import stream_rag
+    if _index is None or _index.total == 0:
+        raise HTTPException(503, "Search index not ready")
+    q = body.query.strip()
+    if not q:
+        raise HTTPException(400, "query field is required")
+
+    def events():
+        try:
+            for ev in stream_rag(q, _index, top_k=min(50, max(1, body.max_results)),
+                                 state_filter=body.state_filter, city_filter=body.city_filter):
+                yield _sse(ev["event"], ev["data"])
+        except Exception as e:  # retrieval failure after headers are sent
+            log.error(f"stream failed: {e}", exc_info=True)
+            yield _sse("error", {"message": "internal error", "fallback": False})
+            yield _sse("done", {"source_ids": [], "fallback": True})
+
+    return StreamingResponse(events(), media_type="text/event-stream",
+                             headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
