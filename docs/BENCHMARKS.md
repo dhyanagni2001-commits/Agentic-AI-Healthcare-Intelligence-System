@@ -72,9 +72,40 @@ This measures a real LLM, but with **llama.cpp on an Apple M5 Pro, not vLLM on a
 - **Prompt caching skews TTFT across levels.** The first level runs with a cold cache: 118 ms TTFT for the full RAG prompt. Later levels reuse cached prefixes of the same 24 prompts. Rerunning concurrency 1 with a warm cache gave a TTFT p50 of **25 ms**. Read the cold number as first-request latency. For clean per-level comparisons, restart the server or use a non-repeating workload.
 - **Retrieval is not the bottleneck here** (11–16 ms). Generation dominates end-to-end latency.
 
-## Pending: GPU validation
+## Verified result: vLLM on an NVIDIA T4 (model only)
 
-No NVIDIA GPU was available, so **no vLLM TTFT, ITL or throughput numbers exist yet.** The llama.cpp numbers above are not a substitute. Run these on a GPU host (one T4, L4 or A10 is enough for the default `Qwen/Qwen2.5-1.5B-Instruct`):
+- **Server:** **vLLM 0.31.0** (V1 engine) on Kaggle, 1× Tesla T4 16 GB (one of two, pinned with `CUDA_VISIBLE_DEVICES=0`), driver 580.178.04, PyTorch 2.13.0+cu130
+- **Model:** `Qwen/Qwen2.5-1.5B-Instruct`, fp16 (`--dtype half`; the T4 has no bf16), `--max-model-len 4096`, `--gpu-memory-utilization 0.90`
+- **Workload:** same 24-query file (byte-identical upload), `max_tokens=128`, temperature 0, **64 requests per level**, 2 warmup. The client ran in the same notebook, so there are no network hops.
+- **Engine config (from `vllm.log`):**
+  - attention backend `TRITON_ATTN`, since FlashAttention needs Ampere or newer and the T4 is Turing (sm75)
+  - CUDA graphs in `FULL_AND_PIECEWISE` mode; prefix caching and chunked prefill on (the defaults)
+  - KV cache **9.08 GiB = 340,064 tokens**, so vLLM reports a maximum concurrency of **83×** at 4,096 tokens per request
+  - weights and non-torch memory 3.24 GiB; engine init 67.9 s, including 20.6 s of compilation
+- **Raw:** `benchmarks/results/vllm-t4-qwen1.5b.json` *(still to copy in from the Kaggle output)*
+
+| Concurrency | ok/n | req/s | output tok/s | TTFT p50 / p99 (ms) | ITL p50 (ms) | TPOT p50 (ms) | E2E p50 / p99 (ms) |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 64/64 | 0.60 | 54 | 40.7 / 49.3 | 18.3 | 18.2 | 1584 / 2620 |
+| 4 | 64/64 | 2.59 | 234 | 47.3 / 58.0 | 15.7 | 15.8 | 1364 / 2089 |
+| 8 | 64/64 | 4.82 | 431 | 52.1 / 69.2 | 16.4 | 16.6 | 1396 / 2166 |
+| 16 | 64/64 | 8.06 | 723 | 57.0 / 99.2 | 17.9 | 18.4 | 1552 / 2407 |
+| 32 | 64/64 | 11.74 | 1060 | 104.5 / 162.6 | 23.2 | 23.3 | 2042 / 3145 |
+
+**Reading it:**
+- **Continuous batching scales.** Output throughput rises **19.6×** from concurrency 1 to 32 (54 → 1,060 tok/s), and there are no errors at any level.
+- **Latency holds under load.** TTFT p50 stays within 41–57 ms up to concurrency 16 and reaches 105 ms at 32. Per-token latency rises only from 18 to 23 ms.
+- **The contrast with llama.cpp is in the shape of the curve, not the absolute numbers.** llama.cpp, with 4 fixed slots, flattened at 369 tok/s with 1.2 s TTFT at concurrency 8. vLLM at concurrency 8 gave 431 tok/s at 52 ms and kept climbing. The hardware differs (M5 Pro vs T4), as do the precision (4-bit vs fp16) and the request count (32 vs 64), so don't compare per-request speed directly. Single-stream ITL is actually lower on the M5 Pro (5.5 vs 18 ms), as expected for a 4-bit model on high-bandwidth unified memory.
+- **Against the hardware limit:** single-stream decoding is bound by memory bandwidth. Reading 3.24 GiB of weights at the T4's 320 GB/s peak takes about 10.9 ms per token, a ceiling of about 92 tok/s. The measured 18.3 ms is about **59% of peak bandwidth**, which is reasonable given Triton attention (no FlashAttention on Turing) and scheduler overhead.
+- **The prompts are short.** System prompt plus query is about 50 tokens. Real HealthIQ RAG prompts carry 10 evidence snippets (up to 220 characters each) plus computed facts, about 450–800 tokens, roughly 10× longer, so prefill and TTFT will be noticeably higher, especially under concurrency. The end-to-end `--target app` run on vLLM measures that and is still pending.
+- **The run repeats.** A second identical run reproduced output throughput within ±1.1% at every level (e.g. 1,060 → 1,048 tok/s at concurrency 32) and TTFT p50 within 0.5 ms up to concurrency 16.
+- **p99 is noisy.** With 64 requests per level, p99 is close to the slowest single request: at concurrency 32, TTFT p99 was 163 ms in one run and 212 ms in the other. E2E spread also reflects output length (anywhere up to 128 tokens). Repeat runs would give variance bounds.
+- **The ceiling isn't reached yet.** The KV cache could hold about 83 full-length requests, and concurrency 32 still increases throughput. A sweep to 64–128 would find the saturation point.
+- **Caveat: prefix caching.** The workload cycles 24 short prompts, and vLLM's prefix cache is on by default. Repeated prompts can skip part of prefill, which slightly flatters TTFT. With prompts of only about 40 tokens the effect is small, but a non-repeating workload would remove it.
+
+## Still pending
+
+The model-only vLLM run is done (above). For RAG-sized prompts with prefix caching off, concurrency 1–128 and 3 repeats, paste `benchmarks/kaggle_rag_sweep.py` into a GPU notebook. It uses `benchmarks/workloads/healthcare_rag_prompts.jsonl`, the real HealthIQ prompts for the 24 queries. Still to run on a GPU host: **(2)** end to end through HealthIQ with vLLM, **(3)** answer grounding with the fp16 model, and the Kubernetes `gpu` overlay. Commands:
 
 ```bash
 # 1. Model serving alone
