@@ -8,3 +8,12 @@ data/vector_index/
 __pycache__/
 *.pyc
 backend/evaluation/results/
+
+# Frontend dependencies and build output
+node_modules/
+frontend/build/
+.cache/
+
+# Local tooling / OS
+.DS_Store
+.pytest_cache/
